@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import "./App.scss";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <GoogleOAuthProvider clientId="tmp">
+      <div className="App">
+        <header className="App-header">
+          <div className="App-title">
+            <label className="title-the unselectable">{"The"}</label>
+            <label className="title-whiteboard unselectable">
+              {"Whiteboard"}
+            </label>
+          </div>
+        </header>
+        <div className="App-content">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              console.log(credentialResponse);
+            }}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
+        </div>
+      </div>
+    </GoogleOAuthProvider>
   );
 }
 
