@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "./logo.svg";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import "./App.scss";
 
