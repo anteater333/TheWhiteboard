@@ -41,6 +41,7 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "express": "~4.16.1",
+    "google-auth-library": "^8.1.1",
     "morgan": "~1.9.1",
     "node-sass": "^7.0.1",
     "react": "^18.2.0",

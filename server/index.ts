@@ -1,4 +1,5 @@
 import Express from "express";
+import Routes from "./routes";
 import { PORT } from "./utils/config";
 
 export default class Server {
@@ -12,10 +13,10 @@ export default class Server {
 
   private plugins() {
     // middlewares
-    // this.app.use(Express.json());
-    // this.app.use(Express.urlencoded({ extended: true }));
+    this.app.use(Express.json());
+    this.app.use(Express.urlencoded({ extended: true }));
     // this.app.use(Cors());
-    // this.app.use(Routes);
+    this.app.use(Routes);
   }
 
   public run() {
