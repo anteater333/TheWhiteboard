@@ -3,9 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "next start",
-    "build": "next build",
-    "dev": "next dev"
+    "start": "cross-env NODE_ENV=production node build-server/index.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "npm run build:client && npm run build:server",
+    "dev:server": "nodemon",
+    "dev:client": "cross-env PORT=5001 react-scripts start",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build:client": "react-scripts build",
+    "test:client": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -41,6 +47,8 @@
     "node-sass": "^7.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.2",
+    "react-scripts": "^5.0.1",
     "typescript": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
