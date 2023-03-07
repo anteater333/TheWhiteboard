@@ -96,10 +96,6 @@ export default function Home() {
           </Content>
         </FrontPage>
       </GoogleOAuthProvider>
-      <style jsx>{`
-        .App {
-        }
-      `}</style>
     </>
   );
 }
