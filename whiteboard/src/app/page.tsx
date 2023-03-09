@@ -7,35 +7,20 @@ import {
   GoogleLogin,
   GoogleOAuthProvider,
 } from "@react-oauth/google";
-import styled, { keyframes, css } from "styled-components";
+import styled from "styled-components";
+
+import { unselectable } from "@/style/properties";
+import { appear } from "@/style/animations";
 
 const clientId =
   "706303852091-uqhi736g8tqcm4un3s2usu1qa0t0avdb.apps.googleusercontent.com";
 
 // #region styles
 
-const AnimAppear = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
-
-const unselectable = css`
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-`;
-
 const FrontPage = styled.div`
   font-family: "Galmuri11";
   text-align: center;
-  animation: ${AnimAppear} 2s;
+  animation: ${appear} 2s;
 `;
 const Header = styled.header`
   height: 50vh;
