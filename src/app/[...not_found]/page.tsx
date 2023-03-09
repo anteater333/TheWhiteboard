@@ -5,12 +5,12 @@ import { notFound } from "next/navigation";
  * 정의하지 않은 Route 경로를 CatchAll로 받아 404로 Redirect.
  */
 export default function NotFoundCatchAll({
-  _params,
+  params,
 }: {
-  _params: { not_found: string[] };
+  params: { not_found: string[] };
 }) {
   //// How to catch undefined URL routes string
-  // console.log(_params["not_found"].join("/"));
+  // console.log(params["not_found"].join("/"));
 
   notFound();
 }

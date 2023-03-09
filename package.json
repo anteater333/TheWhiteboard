@@ -3,63 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=production node build-server/index.js",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "build": "npm run build:client && npm run build:server",
-    "dev:server": "nodemon",
-    "dev:client": "cross-env PORT=5001 react-scripts start",
-    "build:server": "tsc --project tsconfig.server.json",
-    "build:client": "react-scripts build",
-    "test:client": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev": "PORT=5000 next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@react-oauth/google": "^0.2.6",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.47",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
-    "express": "~4.16.1",
-    "google-auth-library": "^8.1.1",
-    "morgan": "~1.9.1",
-    "next": "^13.2.3",
-    "node-sass": "^7.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.2",
-    "react-scripts": "^5.0.1",
-    "typescript": "^4.7.4",
-    "web-vitals": "^2.1.4"
+    "@react-oauth/google": "^0.8.0",
+    "@types/node": "18.14.6",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "@types/styled-components": "^5.1.26",
+    "eslint-config-next": "13.2.3",
+    "next": "13.2.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "styled-components": "^5.3.8"
   },
   "devDependencies": {
-    "concurrently": "^7.3.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.21.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "nodemon": "^2.0.19",
-    "prettier": "^2.7.1",
-    "ts-node": "^10.9.1"
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.35.0",
+    "sass": "^1.58.3",
+    "typescript": "^4.9.5"
   }
 }
