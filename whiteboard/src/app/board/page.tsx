@@ -1,7 +1,9 @@
+import Memo from "@/components/Memo";
+
 export default function Board() {
   return (
-    <>
-      <h1>Hello Board</h1>
-    </>
+    <div>
+      <Memo></Memo>
+    </div>
   );
 }
