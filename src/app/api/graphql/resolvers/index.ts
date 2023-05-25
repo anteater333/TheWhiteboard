@@ -1,7 +1,11 @@
+import dbClient from "@/service/database";
+
 export const resolvers = {
   Query: {
-    user: async (parent: unknown, args: { id: number }) => {
-      return { id: args.id };
+    user: async (parent: unknown, args: { id: string }) => {
+      return await dbClient.user.findFirst({
+        where: { id: parseInt(args.id) },
+      });
     },
   },
   Mutation: {
@@ -9,8 +13,18 @@ export const resolvers = {
       parent: unknown,
       args: { input: { nickname: string } }
     ) => {
-      console.log(args);
-      return { user: { nickname: args.input.nickname } };
+      const now = new Date();
+
+      return {
+        user: await dbClient.user.create({
+          data: {
+            oauthId: "tmp",
+            nickname: args.input.nickname,
+            createdAt: now,
+            updatedAt: now,
+          },
+        }),
+      };
     },
   },
 };
