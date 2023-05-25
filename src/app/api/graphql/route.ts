@@ -7,6 +7,8 @@ import {
   GraphQLString,
 } from "graphql";
 import { NextRequest } from "next/server";
+import { typeDefs } from "./schema";
+import { resolvers } from "./resolvers";
 
 const UserType = new GraphQLObjectType({
   name: "User",
@@ -40,7 +42,8 @@ const Query = new GraphQLObjectType({
 });
 
 const server = new ApolloServer({
-  schema: new GraphQLSchema({ types: [UserType], query: Query }),
+  typeDefs: typeDefs,
+  resolvers: resolvers,
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
