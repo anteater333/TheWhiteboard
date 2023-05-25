@@ -10,9 +10,70 @@ datasource db {
 }
 
 model User {
-  id  String  @default(cuid())  @id
-  oauth_id  String
-  nickname  String
-  created_at  DateTime
-  updated_at  DateTime
+  id          Int       @id  @default(autoincrement())
+
+  oauthId     String
+  nickname    String
+
+  memos       Memo[]
+  votes       Vote[]
+
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+model Board {
+  id          Int       @id  @default(autoincrement())
+
+  memos       Memo[]
+  
+  name        String
+  description String
+  pageCount   Int
+
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+model Memo {
+  id          Int       @id  @default(autoincrement())
+
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  board       Board     @relation(fields: [boardId], references: [id])
+  boardId     Int
+  
+  // 메모 인용 관계 정의
+  referencingMemo     Memo?   @relation("MemoReference", fields: [referencingMemoId], references: [id])  // 내가 인용하고 있는 메모
+  referencingMemoId   Int?    @unique
+  referencedMemo      Memo?   @relation("MemoReference") // 나를 인용하는 메모
+  
+  memoType        Int
+  title           String
+  content         String
+  imageUrlFirst   String
+  imageUrlSecond  String
+  isWriting       Boolean
+  pageNum         Int
+  positionX       Int
+  positionY       Int
+
+  votes           Vote[]
+
+  createdAt       DateTime
+  updatedAt       DateTime
+}
+
+model Vote {
+  id          Int       @id  @default(autoincrement())
+
+  memo        Memo      @relation(fields: [memoId], references: [id])
+  memoId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+
+  isUp        Boolean
+
+  createdAt   DateTime
+  updatedAt   DateTime
 }
