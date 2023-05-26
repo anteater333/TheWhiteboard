@@ -10,16 +10,17 @@ datasource db {
 }
 
 model User {
-  id          Int       @id  @default(autoincrement())
+  id                Int       @id  @default(autoincrement())
 
-  oauthId     String
-  nickname    String
+  oauthProvider     String
 
-  memos       Memo[]
-  votes       Vote[]
+  nickname          String
 
-  createdAt   DateTime
-  updatedAt   DateTime
+  memos             Memo[]
+  votes             Vote[]
+
+  createdAt         DateTime
+  updatedAt         DateTime
 }
 
 model Board {

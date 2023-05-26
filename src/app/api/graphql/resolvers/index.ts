@@ -18,7 +18,7 @@ export const resolvers = {
       return {
         user: await dbClient.user.create({
           data: {
-            oauthId: "tmp",
+            oauthProvider: "Google",
             nickname: args.input.nickname,
             createdAt: now,
             updatedAt: now,
