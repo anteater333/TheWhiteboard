@@ -1,4 +1,5 @@
 import "./globals.css";
+import { NextAuthProvider } from "./providers";
 import StyledComponentsRegistry from "./registry";
 
 export const metadata = {
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>
   );
