@@ -1,6 +1,4 @@
-import { keyframes } from "styled-components";
-
-const appear = keyframes`
+const appear = `
   from {
     opacity: 0;
   }

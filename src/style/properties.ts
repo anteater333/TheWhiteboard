@@ -1,6 +1,4 @@
-import { css } from "styled-components";
-
-const unselectable = css`
+const unselectable = `
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;

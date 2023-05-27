@@ -1,9 +1,3 @@
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-import styled from "styled-components";
-
-import { unselectable } from "@/style/properties";
-import { appear } from "@/style/animations";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/service/auth";
 import { signIn } from "next-auth/react";
@@ -48,18 +42,10 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   console.log(session);
 
-  // const handleOnLoginSuccess = useCallback(
-  //   (credential: CredentialResponse) => {
-  //     console.log(credential);
-  //     router.push("/board");
-  //   },
-  //   [router]
-  // );
-
   return (
     <>
-      <div>
-        <header>
+      <div id="front-page" className="font-galmuri text-center">
+        <header className="h-[50vh]">
           <div>
             <label>{"The"}</label>
             <label>{"Whiteboard"}</label>
