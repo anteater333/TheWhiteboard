@@ -4,11 +4,27 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "!./node_modules",
   ],
   theme: {
     extend: {
       fontFamily: {
         galmuri: "Galmuri11",
+      },
+      animation: {
+        type: "type 2.5s steps(20, end), blink .75s linear infinite alternate",
+      },
+      keyframes: {
+        type: {
+          from: { width: 0 },
+          to: { width: "100%" },
+        },
+        blink: {
+          "0%": { "border-color": "transparent" },
+          "40%": { "border-color": "transparent" },
+          "60%": { "border-color": "black" },
+          "100%": { "border-color": "black" },
+        },
       },
     },
   },
