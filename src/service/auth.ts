@@ -23,5 +23,7 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-  callbacks: {},
+  callbacks: {
+    
+  },
 };
