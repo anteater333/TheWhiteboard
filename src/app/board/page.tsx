@@ -9,6 +9,7 @@ export default async function Board() {
   return (
     <div>
       <Memo></Memo>
+      <div>{`Hello ${session?.user.nickname}`}</div>
       <LogoutButton />
     </div>
   );

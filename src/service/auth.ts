@@ -1,5 +1,7 @@
-import { Account, NextAuthOptions, TokenSet } from "next-auth";
+import { generateRandomNickname } from "@/utils/generator";
+import { Account, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import dbClient from "./database";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -31,8 +33,49 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
+    /** 로그인 시도 Hook */
+    async signIn({ account, user, credentials, email, profile }) {
+      if (!profile?.email) return false;
+      const userEmail = profile.email;
+
+      try {
+        // 데이터베이스에 사용자 레코드가 없을 경우 새 사용자 생성
+        const existingUser = await dbClient.user.findUnique({
+          where: { email: userEmail },
+        });
+
+        // 존재하지 않는다면 새 사용자 레코드 생성
+        if (!existingUser) {
+          const now = new Date();
+          await dbClient.user.create({
+            data: {
+              email: userEmail,
+              nickname: generateRandomNickname(),
+              provider: "google", // TODO :: 다양한 Provider 지원
+              createdAt: now,
+              updatedAt: now,
+            },
+          });
+        }
+
+        return true;
+      } catch (error) {
+        console.error(error);
+
+        return false;
+      }
+    },
     /** 토큰 생성 Hook */
     async jwt({ token, account, user, profile, session, trigger }) {
+      // 토큰에 Nickname 포함시키기
+      const signedUser = await dbClient.user.findUnique({
+        where: { email: token.email ?? undefined },
+      });
+
+      if (signedUser) {
+        token.nickname = signedUser.nickname;
+      }
+
       // Refresh Token Rotation
       if (account) {
         // Save the access token and refresh token in the JWT on the initial login
@@ -85,6 +128,8 @@ export const authOptions: NextAuthOptions = {
     /** 세션 생성 Hook */
     async session({ newSession, session, token, trigger, user }) {
       session.error = token.error;
+      session.access_token = token.access_token;
+      session.user.nickname = token.nickname;
       return session;
     },
   },
@@ -92,7 +137,14 @@ export const authOptions: NextAuthOptions = {
 
 declare module "next-auth" {
   interface Session {
+    user: {
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      nickname?: string | null;
+    };
     error?: "RefreshAccessTokenError";
+    access_token?: string;
   }
   interface Account {
     expires_in?: number;
@@ -100,6 +152,7 @@ declare module "next-auth" {
 }
 declare module "next-auth/jwt" {
   interface JWT {
+    nickname?: string;
     access_token?: string;
     expires_at?: number;
     refresh_token?: string;
