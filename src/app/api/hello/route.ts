@@ -4,9 +4,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  console.log(session);
+
+  if (!session) {
+    return NextResponse.json({ message: "Login guard test" }, { status: 401 });
+  }
+
   return NextResponse.json({
-    hello: `world. This is ${Date.now()}`,
-    token: session,
+    hello: `${session.user.nickname}`,
   });
 }

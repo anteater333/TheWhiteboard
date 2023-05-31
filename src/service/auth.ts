@@ -118,7 +118,6 @@ export const authOptions: NextAuthOptions = {
     /** 세션 생성 Hook */
     async session({ newSession, session, token, trigger, user }) {
       session.error = token.error;
-      session.access_token = token.access_token;
       session.user.nickname = token.nickname;
       return session;
     },
