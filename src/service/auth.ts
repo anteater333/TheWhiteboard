@@ -21,17 +21,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  cookies: {
-    pkceCodeVerifier: {
-      name: "next-auth.pkce.code_verifier",
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
+  cookies: {},
   callbacks: {
     /** 로그인 시도 Hook */
     async signIn({ account, user, credentials, email, profile }) {

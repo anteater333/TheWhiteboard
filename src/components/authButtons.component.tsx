@@ -16,8 +16,8 @@ export const LoginButton = () => {
 export const LogoutButton = () => {
   return (
     <button
-      className="text-3xl font-bold mt-4 hover:underline"
-      onClick={() => signOut({ callbackUrl: "/" })}
+      className="text-2xl mt-4 hover:underline"
+      onClick={() => signOut({ callbackUrl: "/api/auth/signout" })}
     >
       로그아웃
     </button>

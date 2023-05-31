@@ -1,6 +1,13 @@
-import { LoginButton } from "@/components/authButtons.component";
+import { LoginButton, LogoutButton } from "@/components/authButtons.component";
+import { authOptions } from "@/service/auth";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
 
 export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  // console.log(session);
+
   return (
     <>
       <div id="front-page" className="font-galmuri text-center">
@@ -14,9 +21,21 @@ export default async function Home() {
             </span>
           </div>
         </header>
-        <div>
-          <LoginButton />
-        </div>
+        {!!session ? (
+          <div className="flex flex-col justify-center">
+            <Link
+              className="text-3xl mt-2 font-bold hover:underline"
+              href="/board"
+            >
+              게시판으로
+            </Link>
+            <LogoutButton />
+          </div>
+        ) : (
+          <div>
+            <LoginButton />
+          </div>
+        )}
       </div>
     </>
   );
