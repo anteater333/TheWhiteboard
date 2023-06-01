@@ -19,6 +19,9 @@ export const authOptions: NextAuthOptions = {
           access_type: "offline",
         },
       },
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
   ],
   cookies: {},
