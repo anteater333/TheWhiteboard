@@ -20,7 +20,7 @@ export default async function Home() {
           </div>
         </header>
         {!!session ? (
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col items-center justify-center">
             <Link
               className="text-3xl mt-2 font-bold hover:underline"
               href="/board"
