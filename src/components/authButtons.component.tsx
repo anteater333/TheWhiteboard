@@ -1,11 +1,17 @@
 "use client";
 
 import { signIn, signOut } from "next-auth/react";
+import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
-export const LoginButton = () => {
+type AuthButtonType = DetailedHTMLProps<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+>;
+
+export const LoginButton = (props: AuthButtonType) => {
   return (
     <button
-      className="text-3xl font-bold mt-4 hover:underline"
+      {...props}
       onClick={() => signIn("google", { callbackUrl: "/board" })}
     >
       구글 로그인
@@ -13,10 +19,10 @@ export const LoginButton = () => {
   );
 };
 
-export const LogoutButton = () => {
+export const LogoutButton = (props: AuthButtonType) => {
   return (
     <button
-      className="text-2xl mt-4 hover:underline"
+      {...props}
       onClick={() => signOut({ callbackUrl: "/api/auth/signout" })}
     >
       로그아웃

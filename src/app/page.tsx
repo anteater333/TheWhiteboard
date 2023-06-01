@@ -27,11 +27,11 @@ export default async function Home() {
             >
               게시판으로
             </Link>
-            <LogoutButton />
+            <LogoutButton className="text-2xl mt-4 hover:underline" />
           </div>
         ) : (
           <div>
-            <LoginButton />
+            <LoginButton className="text-3xl font-bold mt-4 hover:underline" />
           </div>
         )}
       </div>

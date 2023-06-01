@@ -4,3 +4,9 @@
 @tailwind variants;
 
 @import url("https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+
+body {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+}
