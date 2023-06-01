@@ -8,11 +8,11 @@ export default async function Home() {
 
   return (
     <>
-      <div id="front-page" className="font-galmuri text-center">
-        <header className="h-[50vh] flex justify-center items-end mb-4">
+      <div id="front-page" className="text-center font-galmuri">
+        <header className="mb-4 flex h-[50vh] items-end justify-center">
           <div className="flex justify-center">
             <span>
-              <h1 className="select-none overflow-hidden border-r-[1rem] border-black my-0 mx-auto animate-type whitespace-nowrap">
+              <h1 className="mx-auto my-0 animate-type select-none overflow-hidden whitespace-nowrap border-r-[1rem] border-black">
                 <span className="text-6xl tracking-wide">{"The"}</span>
                 <span className="text-9xl font-bold">{"Whiteboard"}</span>
               </h1>
@@ -22,16 +22,16 @@ export default async function Home() {
         {!!session ? (
           <div className="flex flex-col items-center justify-center">
             <Link
-              className="text-3xl mt-2 font-bold hover:underline"
+              className="mt-2 text-3xl font-bold hover:underline"
               href="/board"
             >
               게시판으로
             </Link>
-            <LogoutButton className="text-2xl mt-4 hover:underline" />
+            <LogoutButton className="mt-4 text-2xl hover:underline" />
           </div>
         ) : (
           <div>
-            <LoginButton className="text-3xl font-bold mt-4 hover:underline" />
+            <LoginButton className="mt-4 text-3xl font-bold hover:underline" />
           </div>
         )}
       </div>
