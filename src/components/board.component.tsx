@@ -1,4 +1,4 @@
-export default function Memo() {
+export const Memo = function () {
   return (
     <div>
       <div>
@@ -9,8 +9,12 @@ export default function Memo() {
       </div>
     </div>
   );
-}
+};
 
+/**
+ * The Whiteboard. Memo들의 집합.
+ * @returns
+ */
 export const Board = function () {
   return (
     <div>
