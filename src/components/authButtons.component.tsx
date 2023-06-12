@@ -12,7 +12,7 @@ export const LoginButton = (props: AuthButtonType) => {
   return (
     <button
       {...props}
-      onClick={() => signIn("google", { callbackUrl: "/board" })}
+      onClick={() => signIn("google", { callbackUrl: "/board/world" })}
     >
       구글 로그인
     </button>

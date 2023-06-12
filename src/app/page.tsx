@@ -23,7 +23,7 @@ export default async function Home() {
           <div className="flex flex-col items-center justify-center">
             <Link
               className="mt-2 text-3xl font-bold hover:underline"
-              href="/board"
+              href="/board/world"
             >
               게시판으로
             </Link>
