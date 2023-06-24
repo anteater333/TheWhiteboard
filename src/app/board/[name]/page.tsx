@@ -16,17 +16,19 @@ export default async function BoardPage({
   const pageNum = searchParams["page"] ?? 1;
 
   return (
-    <div className="flex h-screen w-screen flex-col">
+    <div className="flex h-screen w-screen flex-col overflow-hidden">
       <div
         id="board-header"
-        className="flex justify-center border-b-2 border-gray-200 bg-stone-100 py-2"
+        className="z-10 flex justify-center border-b-2 border-gray-200 bg-stone-100 py-2"
       >
         <div id="board-title" className="font-galmuri text-3xl font-bold">
           {params.name}
         </div>
       </div>
       <div id="board-center" className="relative h-full w-full">
-        <Board></Board>
+        {/* The Whiteboard */}
+        <Board />
+
         <div className="absolute bottom-4 right-4 w-fit">
           <AddButton />
         </div>
@@ -36,7 +38,7 @@ export default async function BoardPage({
       </div>
       <div
         id="board-footer"
-        className="flex w-full items-center border-t-2 border-gray-200 bg-stone-100 px-8 py-1 font-galmuri font-bold"
+        className="z-10 flex w-full items-center border-t-2 border-gray-200 bg-stone-100 px-8 py-1 font-galmuri font-bold"
       >
         <div className="flex flex-1 justify-center">
           <LogoutButton className="mr-auto text-2xl hover:underline" />
