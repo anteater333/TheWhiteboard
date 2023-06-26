@@ -8,6 +8,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        "2xs": ["0.5rem"],
+        "3xs": ["0.375rem"],
+        "4xs": ["0.25rem"],
+      },
       fontFamily: {
         galmuri: "Galmuri11",
       },

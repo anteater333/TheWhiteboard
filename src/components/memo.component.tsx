@@ -1,11 +1,11 @@
 export const Memo = function () {
   return (
-    <div className="absolute left-1/2 top-1/2 h-[24rem] w-[32rem] bg-slate-50">
+    <div className="absolute left-[48rem] top-[28rem] h-[8.4rem] w-[10.6rem] bg-slate-50">
       <div>
-        <label className="text-9xl">{"Hello Memo"}</label>
+        <label className="text-xs">{"Hello Memo"}</label>
       </div>
       <div>
-        <label>{"This is a body."}</label>
+        <label className="text-3xs">{"This is a body."}</label>
       </div>
     </div>
   );

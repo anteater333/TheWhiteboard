@@ -4,7 +4,7 @@ import { useCallback, useState, WheelEvent } from "react";
 import { Memo } from "./memo.component";
 
 const numOfLevels = 8;
-const maxScale = 1;
+const maxScale = 8;
 const minScale = maxScale / numOfLevels;
 
 /**
@@ -13,8 +13,8 @@ const minScale = maxScale / numOfLevels;
  * @returns
  */
 export const Board = function () {
-  const [scaleLevel, setScaleLevel] = useState(numOfLevels);
-  const [scale, setScale] = useState(maxScale);
+  const [scaleLevel, setScaleLevel] = useState(4);
+  const [scale, setScale] = useState(scaleLevel * minScale);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
   const [mouseX, setMouseX] = useState(0);
@@ -44,7 +44,7 @@ export const Board = function () {
 
   return (
     <div
-      className="z-0 h-[3000px] w-[4500px] bg-sky-500 transition-transform"
+      className="absolute z-0 h-screen w-screen bg-sky-500 transition-transform"
       onWheel={handleOnWheel}
       onMouseMove={(event) => {
         setMouseX(event.clientX);
@@ -54,6 +54,7 @@ export const Board = function () {
         transform: `scale(${scale})`,
       }}
     >
+      <div className="fixed left-1/2 top-96 z-50 text-9xl">{scaleLevel}</div>
       <Memo />
     </div>
   );
