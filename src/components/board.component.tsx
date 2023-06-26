@@ -3,7 +3,7 @@
 import { useCallback, useState, WheelEvent } from "react";
 import { Memo } from "./memo.component";
 
-const numOfLevels = 16;
+const numOfLevels = 8;
 const maxScale = 1;
 const minScale = maxScale / numOfLevels;
 
@@ -13,6 +13,7 @@ const minScale = maxScale / numOfLevels;
  * @returns
  */
 export const Board = function () {
+  const [scaleLevel, setScaleLevel] = useState(numOfLevels);
   const [scale, setScale] = useState(maxScale);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
@@ -24,18 +25,16 @@ export const Board = function () {
     (event: WheelEvent<HTMLDivElement>) => {
       event.preventDefault();
 
-      console.log(event.clientX, event.clientY);
+      let newLevel = scaleLevel;
+      newLevel += event.deltaY < 0 ? 1 : -1;
 
-      let newScale = scale;
+      // ScaleLevel 범위 제한
+      newLevel = Math.min(Math.max(1, newLevel), numOfLevels);
 
-      newScale += event.deltaY < 0 ? minScale : -minScale;
-
-      // Scale 범위 제한
-      newScale = Math.min(Math.max(minScale, newScale), maxScale);
-
-      setScale(newScale);
+      setScaleLevel(newLevel);
+      setScale(newLevel * minScale);
     },
-    [scale]
+    [scaleLevel]
   );
 
   return (
