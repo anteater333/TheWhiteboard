@@ -24,6 +24,11 @@ export const Board = function () {
   const handleOnWheel = useCallback(
     (event: WheelEvent<HTMLDivElement>) => {
       event.preventDefault();
+      event.stopPropagation();
+
+      if (event.ctrlKey) {
+        return;
+      }
 
       let newLevel = scaleLevel;
       newLevel += event.deltaY < 0 ? 1 : -1;
