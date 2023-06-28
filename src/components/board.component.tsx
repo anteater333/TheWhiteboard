@@ -34,6 +34,8 @@ export const Board = function () {
         return;
       }
 
+      boardRef.current?.classList.add("transition-transform");
+
       let newLevel = scaleLevel;
       newLevel += event.deltaY < 0 ? 1 : -1;
 
@@ -48,9 +50,12 @@ export const Board = function () {
 
   return (
     <div
+      ref={boardRef}
       className="absolute z-0 h-screen w-screen bg-sky-500 transition-transform"
       onWheel={handleOnWheel}
       onMouseDown={(event) => {
+        boardRef.current?.classList.remove("transition-transform");
+
         setStartMouseX(event.clientX);
         setStartMouseY(event.clientY);
         setIsDragging(true);
