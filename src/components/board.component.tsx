@@ -51,7 +51,7 @@ export const Board = function () {
   return (
     <div
       ref={boardRef}
-      className="absolute z-0 h-screen w-screen bg-sky-500 transition-transform"
+      className="absolute z-0 h-screen w-screen border-gray-300 bg-stone-100 shadow-md transition-transform"
       onWheel={handleOnWheel}
       onMouseDown={(event) => {
         boardRef.current?.classList.remove("transition-transform");
@@ -82,8 +82,23 @@ export const Board = function () {
         transform: `scale(${scale}) translate(${posX}px, ${posY}px)`,
       }}
     >
-      <div className="fixed left-1/2 top-96 z-50 text-9xl">{scaleLevel}</div>
-      <Memo />
+      <div className="fixed left-1/2 top-80 z-50 text-9xl">{scaleLevel}</div>
+      <Memo
+        memo={{
+          user: {
+            nickname: "Tester",
+          },
+          memoType: 0,
+          title: "Title, Deprecated.",
+          content:
+            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 ",
+          createdAt: Date().toString(),
+          votes: [],
+          referencedMemo: [],
+          positionX: 768,
+          positionY: 448,
+        }}
+      />
     </div>
   );
 };
