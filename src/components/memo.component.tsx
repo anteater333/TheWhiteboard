@@ -1,6 +1,9 @@
 import { MemoType } from "@/types/types";
 import { formatDate } from "@/utils/formatter";
+import Image from "next/image";
 import { useMemo } from "react";
+
+import shareBtn from "../../public/svg/share.svg";
 
 type MemoProp = {
   memo: Partial<MemoType>;
@@ -30,8 +33,11 @@ export const Memo = function ({ memo }: MemoProp) {
         left: memo.positionX,
       }}
     >
-      <div id="memo-header" className="flex-row-reverse border-b-[1px]">
-        <div id="memo-owner" className="text-right text-xs">
+      <div
+        id="memo-header"
+        className="flex flex-row-reverse border-b-[1px] text-xs"
+      >
+        <div id="memo-owner" className="text-right">
           <label className="font-galmuri text-3xs font-bold">from. </label>
           {memo.user?.nickname}
         </div>
@@ -47,17 +53,37 @@ export const Memo = function ({ memo }: MemoProp) {
           <div id="memo-date">{formatDate(new Date(memo.createdAt!))}</div>
         </div>
         <div id="memo-footer-slot-2" className="flex">
-          <div id="memo-votes-conatiner">
-            <button id="memo-upvote"></button>
-            <label id="memo-votes">{memo.votes?.length}</label>
-            <button id="memo-downvote"></button>
+          <div id="memo-votes-conatiner" className="flex">
+            {/* △▽□▲▼■ */}
+            <button id="memo-upvote" className="mr-1">
+              △
+            </button>
+            <label id="memo-votes" className="mr-1 block w-3 text-center">
+              {memo.votes?.length}
+            </label>
+            <button id="memo-downvote" className="mr-2">
+              ▽
+            </button>
           </div>
-          <div id="memo-replies-container">
-            <button id="memo-reply"></button>
+          <div id="memo-replies-container" className="flex">
+            <button id="memo-reply" className="mr-1">
+              □
+            </button>
             <label id="memo-replies">{memo.referencedMemo?.length}</label>
           </div>
-          <div id="memo-share-container">
-            <button id="memo-share"></button>
+          <div
+            id="memo-share-container"
+            className="flex flex-grow flex-row-reverse"
+          >
+            <button id="memo-share">
+              <Image
+                className="pt-[1.5px]"
+                alt={"share"}
+                src={shareBtn}
+                width={7}
+                height={7}
+              />
+            </button>
           </div>
         </div>
       </div>
