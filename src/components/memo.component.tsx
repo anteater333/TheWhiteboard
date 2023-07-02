@@ -44,7 +44,7 @@ export const Memo = function ({ memo }: MemoProp) {
         className="min-w-0 border-t-[1px] font-galmuri text-3xs font-bold"
       >
         <div id="memo-footer-slot-1" className="">
-          <div id="memo-date">{memo.createdAt}</div>
+          <div id="memo-date">{formatDate(new Date(memo.createdAt!))}</div>
         </div>
         <div id="memo-footer-slot-2" className="flex">
           <div id="memo-votes-conatiner">
