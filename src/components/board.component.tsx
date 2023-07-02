@@ -91,11 +91,43 @@ export const Board = function () {
           memoType: 0,
           title: "Title, Deprecated.",
           content:
-            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 ",
+            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
           createdAt: Date().toString(),
           votes: [],
           referencedMemo: [],
           positionX: 768,
+          positionY: 448,
+        }}
+      />
+      <div className="fixed left-1/2 top-80 z-50 text-9xl">{scaleLevel}</div>
+      <Memo
+        memo={{
+          user: {
+            nickname: "Tester",
+          },
+          memoType: 0,
+          title: "Title, Deprecated.",
+          content:
+            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+          createdAt: Date().toString(),
+          votes: [],
+          referencedMemo: [],
+          positionX: 768,
+          positionY: 600,
+        }}
+      />
+      <Memo
+        memo={{
+          user: {
+            nickname: "Tester",
+          },
+          memoType: 1,
+          content:
+            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유",
+          createdAt: Date().toString(),
+          votes: [],
+          referencedMemo: [],
+          positionX: 998,
           positionY: 448,
         }}
       />

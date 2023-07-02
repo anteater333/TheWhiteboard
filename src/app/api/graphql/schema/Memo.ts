@@ -8,7 +8,7 @@ const Memo = gql`
     referencingMemo: Memo
     referencedMemo: [Memo]
     memoType: Int
-    title: String
+    title: String @deprecated
     content: String
     imageUrlFirst: String
     imageUrlSecond: String

@@ -1,4 +1,5 @@
 import { MemoType } from "@/types/types";
+import { formatDate } from "@/utils/formatter";
 import { useMemo } from "react";
 
 type MemoProp = {
@@ -11,8 +12,10 @@ export const Memo = function ({ memo }: MemoProp) {
     if (!memo || !memo.memoType) return TextMemo;
 
     switch (memo.memoType) {
-      case 0:
+      case 0: // 일반 텍스트 메모
         return TextMemo;
+      case 1: // 짧은 텍스트 메모
+        return TextShortMemo;
       default:
         return TextMemo;
     }
@@ -21,7 +24,7 @@ export const Memo = function ({ memo }: MemoProp) {
   return (
     <div
       id="memo-container"
-      className="absolute flex h-[8.4rem] w-[10.6rem] flex-col rounded-sm border-gray-200 bg-slate-50 px-2 py-1 shadow-sm"
+      className="absolute flex h-fit w-[10.6rem] flex-col rounded-sm border-gray-200 bg-slate-50 px-2 py-1 shadow-sm"
       style={{
         top: memo.positionY,
         left: memo.positionX,
@@ -29,14 +32,17 @@ export const Memo = function ({ memo }: MemoProp) {
     >
       <div id="memo-header" className="flex-row-reverse border-b-[1px]">
         <div id="memo-owner" className="text-right text-xs">
-          <label className="text-3xs">from. </label>
+          <label className="font-galmuri text-3xs font-bold">from. </label>
           {memo.user?.nickname}
         </div>
       </div>
-      <div id="memo-body" className="flex-grow py-1">
+      <div id="memo-body" className="min-h-0 flex-grow overflow-hidden py-1">
         <MemoContent memo={memo} />
       </div>
-      <div id="memo-footer" className="border-t-[1px] text-3xs">
+      <div
+        id="memo-footer"
+        className="min-w-0 border-t-[1px] font-galmuri text-3xs font-bold"
+      >
         <div id="memo-footer-slot-1" className="">
           <div id="memo-date">{memo.createdAt}</div>
         </div>
@@ -62,8 +68,22 @@ export const Memo = function ({ memo }: MemoProp) {
 export const TextMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
-      <div id="memo-content-text-default" className="flex overflow-hidden">
-        <label className="whitespace-pre-wrap text-2xs">{memo?.content}</label>
+      <div id="memo-content-text-default" className="flex h-24 w-full">
+        <label className="line-clamp-[8] whitespace-pre-wrap text-2xs">
+          {memo?.content}
+        </label>
+      </div>
+    </>
+  );
+};
+
+export const TextShortMemo = function ({ memo }: Partial<MemoProp>) {
+  return (
+    <>
+      <div id="memo-content-text-small" className="flex h-12 w-full">
+        <label className="line-clamp-4 whitespace-pre-wrap text-2xs">
+          {memo?.content}
+        </label>
       </div>
     </>
   );
