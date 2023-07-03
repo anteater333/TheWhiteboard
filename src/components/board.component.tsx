@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, WheelEvent } from "react";
-import { Memo } from "./memo.component";
+import { Memo, testMemoPositionData } from "./memo.component";
 
 const numOfLevels = 8;
 const maxScale = 8;
@@ -51,7 +51,7 @@ export const Board = function () {
   return (
     <div
       ref={boardRef}
-      className="absolute z-0 h-screen w-screen border-gray-300 bg-stone-100 shadow-md transition-transform"
+      className="absolute z-0 h-[1230px] w-[2000px] border-gray-300 bg-stone-100 shadow-md transition-transform"
       onWheel={handleOnWheel}
       onMouseDown={(event) => {
         boardRef.current?.classList.remove("transition-transform");
@@ -95,11 +95,10 @@ export const Board = function () {
           createdAt: Date().toString(),
           votes: [],
           referencedMemo: [],
-          positionX: 768,
-          positionY: 448,
+          positionX: 0,
+          positionY: 0,
         }}
       />
-      <div className="fixed left-1/2 top-80 z-50 text-9xl">{scaleLevel}</div>
       <Memo
         memo={{
           user: {
@@ -112,8 +111,40 @@ export const Board = function () {
           createdAt: Date().toString(),
           votes: [],
           referencedMemo: [],
-          positionX: 768,
-          positionY: 600,
+          positionX: testMemoPositionData.w,
+          positionY: testMemoPositionData.h,
+        }}
+      />
+      <Memo
+        memo={{
+          user: {
+            nickname: "Tester",
+          },
+          memoType: 0,
+          title: "Title, Deprecated.",
+          content:
+            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+          createdAt: Date().toString(),
+          votes: [],
+          referencedMemo: [],
+          positionX: testMemoPositionData.w,
+          positionY: 0,
+        }}
+      />
+      <Memo
+        memo={{
+          user: {
+            nickname: "Tester",
+          },
+          memoType: 0,
+          title: "Title, Deprecated.",
+          content:
+            "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+          createdAt: Date().toString(),
+          votes: [],
+          referencedMemo: [],
+          positionX: 0,
+          positionY: testMemoPositionData.h,
         }}
       />
       <Memo
@@ -127,7 +158,7 @@ export const Board = function () {
           createdAt: Date().toString(),
           votes: [],
           referencedMemo: [],
-          positionX: 998,
+          positionX: 200,
           positionY: 448,
         }}
       />

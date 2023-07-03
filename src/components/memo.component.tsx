@@ -5,6 +5,15 @@ import { useMemo } from "react";
 
 import shareBtn from "../../public/svg/share.svg";
 
+/**
+ * 메모 너비 200px
+ * 메모 높이 164px (기본)
+ */
+export const testMemoPositionData = {
+  w: 200,
+  h: 164,
+};
+
 type MemoProp = {
   memo: Partial<MemoType>;
 };
@@ -27,7 +36,7 @@ export const Memo = function ({ memo }: MemoProp) {
   return (
     <div
       id="memo-container"
-      className="absolute flex h-fit w-[10.6rem] flex-col rounded-sm border-gray-200 bg-slate-50 px-2 py-1 shadow-sm"
+      className="absolute m-2 flex h-fit w-[11.5rem] flex-col rounded-sm border-gray-200 bg-slate-50 px-1 py-1 shadow-sm"
       style={{
         top: memo.positionY,
         left: memo.positionX,
@@ -35,7 +44,7 @@ export const Memo = function ({ memo }: MemoProp) {
     >
       <div
         id="memo-header"
-        className="flex flex-row-reverse border-b-[1px] text-xs"
+        className="flex h-4 flex-row-reverse border-b-[1px] text-xs"
       >
         <div id="memo-owner" className="text-right">
           <label className="font-galmuri text-3xs font-bold">from. </label>
@@ -47,7 +56,7 @@ export const Memo = function ({ memo }: MemoProp) {
       </div>
       <div
         id="memo-footer"
-        className="min-w-0 border-t-[1px] font-galmuri text-3xs font-bold"
+        className="flex h-5 min-w-0 flex-col justify-end border-t-[1px] font-galmuri text-3xs font-bold"
       >
         <div id="memo-footer-slot-1" className="">
           <div id="memo-date">{formatDate(new Date(memo.createdAt!))}</div>
@@ -95,7 +104,7 @@ export const TextMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-default" className="flex h-24 w-full">
-        <label className="line-clamp-[8] whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-6 whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>
@@ -106,8 +115,8 @@ export const TextMemo = function ({ memo }: Partial<MemoProp>) {
 export const TextShortMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
-      <div id="memo-content-text-small" className="flex h-12 w-full">
-        <label className="line-clamp-4 whitespace-pre-wrap text-2xs">
+      <div id="memo-content-text-small" className="flex h-6 w-full">
+        <label className="line-clamp-2 whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>
