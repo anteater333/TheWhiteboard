@@ -174,8 +174,13 @@ export const Board = function () {
           referencedMemo: [],
           positionX: 200,
           positionY: 448,
+    <>
+      <div id="debugger" className="fixed left-1/2 top-1/2 z-50 text-5xl">
+        <div className="">{`${posX.toFixed(2)}, ${posY.toFixed(2)}`}</div>
+      </div>
         }}
       />
     </div>
+    </>
   );
 };
