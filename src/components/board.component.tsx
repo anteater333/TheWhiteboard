@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, WheelEvent } from "react";
+import { MouseEvent, useCallback, useRef, useState, WheelEvent } from "react";
 import { Memo, testMemoPositionData } from "./memo.component";
 
 const numOfLevels = 8;
@@ -48,36 +48,50 @@ export const Board = function () {
     [scaleLevel]
   );
 
+  // #region Board 이동 관련
+  const handleOnMouseDown = useCallback(
+    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+      boardRef.current?.classList.remove("transition-transform");
+
+      setStartMouseX(event.clientX);
+      setStartMouseY(event.clientY);
+      setIsDragging(true);
+    },
+    []
+  );
+
+  const handleOnMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleOnMouseMove = useCallback(
+    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+      if (!isDragging) {
+        return;
+      }
+
+      setPosX((prev) => {
+        return prev - (startMouseX - event.clientX) / scaleLevel;
+      });
+      setPosY((prev) => {
+        return prev - (startMouseY - event.clientY) / scaleLevel;
+      });
+
+      setStartMouseX(event.clientX);
+      setStartMouseY(event.clientY);
+    },
+    [isDragging, scaleLevel, startMouseX, startMouseY]
+  );
+  // #endregion
+
   return (
     <div
       ref={boardRef}
       className="absolute z-0 h-[1230px] w-[2000px] border-gray-300 bg-stone-100 shadow-md transition-transform"
       onWheel={handleOnWheel}
-      onMouseDown={(event) => {
-        boardRef.current?.classList.remove("transition-transform");
-
-        setStartMouseX(event.clientX);
-        setStartMouseY(event.clientY);
-        setIsDragging(true);
-      }}
-      onMouseUp={(event) => {
-        setIsDragging(false);
-      }}
-      onMouseMove={(event) => {
-        if (!isDragging) {
-          return;
-        }
-
-        setPosX((prev) => {
-          return prev - (startMouseX - event.clientX) / scaleLevel;
-        });
-        setPosY((prev) => {
-          return prev - (startMouseY - event.clientY) / scaleLevel;
-        });
-
-        setStartMouseX(event.clientX);
-        setStartMouseY(event.clientY);
-      }}
+      onMouseDown={handleOnMouseDown}
+      onMouseUp={handleOnMouseUp}
+      onMouseMove={handleOnMouseMove}
       style={{
         transform: `scale(${scale}) translate(${posX}px, ${posY}px)`,
       }}
