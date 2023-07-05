@@ -5,15 +5,6 @@ import { useMemo } from "react";
 
 import shareBtn from "../../public/svg/share.svg";
 
-/**
- * 메모 너비 200px
- * 메모 높이 164px (기본)
- */
-export const testMemoPositionData = {
-  w: 200,
-  h: 164,
-};
-
 type MemoProp = {
   memo: Partial<MemoType>;
 };
@@ -40,6 +31,9 @@ export const Memo = function ({ memo }: MemoProp) {
       style={{
         top: memo.positionY,
         left: memo.positionX,
+      }}
+      onMouseDown={(event) => {
+        event.stopPropagation();
       }}
     >
       <div
@@ -104,7 +98,7 @@ export const TextMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-default" className="flex h-24 w-full">
-        <label className="line-clamp-6 whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-6 cursor-text whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>
@@ -116,7 +110,7 @@ export const TextShortMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-small" className="flex h-6 w-full">
-        <label className="line-clamp-2 whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-2 cursor-text whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>

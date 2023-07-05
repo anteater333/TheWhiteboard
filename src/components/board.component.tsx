@@ -1,7 +1,26 @@
 "use client";
 
-import { MouseEvent, useCallback, useRef, useState, WheelEvent } from "react";
-import { Memo, testMemoPositionData } from "./memo.component";
+import {
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  WheelEvent,
+} from "react";
+import { Memo } from "./memo.component";
+
+/**
+ * 메모 너비 200px
+ * 메모 높이 164px (기본)
+ */
+const testMemoPositionData = {
+  w: 200,
+  h: 164,
+};
+
+const boardWidth = 2000;
+const boardHeight = 1240;
 
 const numOfLevels = 8;
 const maxScale = 8;
@@ -98,30 +117,90 @@ export const Board = function () {
     },
     [isDragging, scaleLevel, startMouseX, startMouseY]
   );
+
+  /** 이동 범위 제한 */
+  useEffect(() => {
+    if (isDragging) return;
+
+    const timeoutId = setTimeout(() => {
+      boardRef.current?.classList.add("transition-transform");
+
+      const margin = 48 / scale;
+
+      // 좌/상단 제한 수치
+      const positiveXThreshold =
+        (boardWidth * (scale - 1)) / (2 * scale) + margin;
+      const positiveYThreshold =
+        (boardHeight * (scale - 1)) / (2 * scale) + margin;
+
+      // 우/하단 제한 수치
+      const negativeXThreshold =
+        window.innerWidth / scale -
+        (boardWidth * (scale + 1)) / (2 * scale) -
+        margin;
+      const negativeYThreshold =
+        window.innerHeight / scale -
+        (boardHeight * (scale + 1)) / (2 * scale) -
+        112 / scale - // Header/Footer 높이 감안
+        margin;
+
+      if (posX > positiveXThreshold) {
+        setPosX(positiveXThreshold);
+      }
+      if (posY > positiveYThreshold) {
+        setPosY(positiveYThreshold);
+      }
+      if (posX < negativeXThreshold) {
+        setPosX(negativeXThreshold);
+      }
+      if (posY < negativeYThreshold) {
+        setPosY(negativeYThreshold);
+      }
+    }, 50);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [posX, posY, scale, isDragging]);
   // #endregion
 
   return (
     <>
-      <div id="debugger" className="fixed left-1/2 top-1/2 z-50 text-5xl">
+      {/* <div id="debugger" className="fixed left-1/2 top-1/2 z-50 text-5xl">
         <div className="">{`${posX.toFixed(2)}, ${posY.toFixed(2)}`}</div>
-      </div>
+        <div>{`${scale.toFixed(2)}`}</div>
+      </div> */}
       <div
         id="board-controller-container"
-        className="absolute right-2 top-2 z-50 flex flex-col text-center font-galmuri text-2xl font-bold"
+        className="absolute right-4 top-2 z-50 flex flex-col text-center font-galmuri text-2xl font-bold"
       >
         <button onClick={() => scaleUp()}>+</button>
         <label className="pb-1 pt-2 text-base">{scaleLevel}</label>
         <button onClick={() => scaleDown()}>-</button>
+        <button
+          className="mt-1"
+          onClick={() => {
+            setScale(1);
+            setScaleLevel(1);
+            setPosX(0);
+            setPosY(0);
+            setIsDragging(false);
+          }}
+        >
+          ↻
+        </button>
       </div>
       <div
         id="board"
         ref={boardRef}
-        className="absolute z-0 h-[1230px] w-[2000px] border-gray-300 bg-stone-100 shadow-md transition-transform"
+        className="absolute z-0 rounded-lg border-gray-300 bg-stone-100 shadow-md transition-transform"
         onWheel={handleOnWheel}
         onMouseDown={handleOnMouseDown}
         onMouseUp={handleOnMouseUp}
         onMouseMove={handleOnMouseMove}
         style={{
+          width: `${boardWidth}px`,
+          height: `${boardHeight}px`,
           transform: `scale(${scale}) translate(${posX}px, ${posY}px)`,
         }}
       >
