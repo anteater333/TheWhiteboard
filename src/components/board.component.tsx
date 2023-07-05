@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  KeyboardEvent,
   MouseEvent,
   useCallback,
   useEffect,
@@ -84,6 +85,30 @@ export const Board = function () {
   );
 
   // #region Board 이동 관련
+  const handleOnKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      switch (event.key) {
+        case "ArrowLeft":
+          setPosX((prev) => prev + 96 / scale);
+          break;
+        case "ArrowRight":
+          setPosX((prev) => prev - 96 / scale);
+          break;
+        case "ArrowUp":
+          setPosY((prev) => prev + 96 / scale);
+          break;
+        case "ArrowDown":
+          setPosY((prev) => prev - 96 / scale);
+          break;
+      }
+    },
+    [scale]
+  );
+
   const handleOnMouseDown = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
       boardRef.current?.classList.remove("transition-transform");
@@ -192,12 +217,14 @@ export const Board = function () {
       </div>
       <div
         id="board"
+        tabIndex={1}
         ref={boardRef}
-        className="absolute z-0 rounded-lg border-gray-300 bg-stone-100 shadow-md transition-transform"
+        className="absolute z-0 rounded-lg border-gray-300 bg-stone-100 shadow-md outline-none transition-transform"
         onWheel={handleOnWheel}
         onMouseDown={handleOnMouseDown}
         onMouseUp={handleOnMouseUp}
         onMouseMove={handleOnMouseMove}
+        onKeyDown={handleOnKeyDown}
         style={{
           width: `${boardWidth}px`,
           height: `${boardHeight}px`,
