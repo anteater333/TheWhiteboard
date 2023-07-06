@@ -9,7 +9,9 @@ import {
   useState,
   WheelEvent,
 } from "react";
+import { AddButton, OnGoingMemoButton } from "./buttons.component";
 import { Memo } from "./memo.component";
+import { motion } from "framer-motion";
 
 /**
  * 메모 너비 200px
@@ -43,6 +45,8 @@ export const Board = function () {
   const [startMouseY, setStartMouseY] = useState(0);
 
   const [isDragging, setIsDragging] = useState(false);
+
+  const [showAddList, setShowAddList] = useState(false);
 
   /** 1단계 확대 */
   const scaleUp = useCallback(() => {
@@ -122,6 +126,7 @@ export const Board = function () {
 
   const handleOnMouseUp = useCallback(() => {
     setIsDragging(false);
+    setShowAddList(false);
   }, []);
 
   const handleOnMouseMove = useCallback(
@@ -287,7 +292,7 @@ export const Board = function () {
             memoType: 0,
             title: "Title, Deprecated.",
             content:
-              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+              "test\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
             createdAt: Date().toString(),
             votes: [],
             referencedMemo: [],
@@ -302,7 +307,7 @@ export const Board = function () {
             },
             memoType: 1,
             content:
-              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유",
+              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
             createdAt: Date().toString(),
             votes: [],
             referencedMemo: [],
@@ -311,6 +316,56 @@ export const Board = function () {
           }}
         />
       </div>
+
+      <div className="absolute bottom-6 right-4 flex w-fit flex-col items-end">
+        {showAddList ? (
+          <AddMemoList
+            onSelected={(selected) => {
+              setShowAddList(showAddList);
+            }}
+          />
+        ) : undefined}
+        <AddButton
+          onClick={() => {
+            setShowAddList(!showAddList);
+          }}
+        />
+      </div>
+      <div className="absolute bottom-6 left-4 w-fit">
+        <OnGoingMemoButton />
+      </div>
     </>
+  );
+};
+
+type AddMemoListProp = {
+  onSelected: (selected: number) => void;
+};
+
+const AddMemoList = function ({ onSelected }: AddMemoListProp) {
+  return (
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.15 }}
+      className="mb-4 flex w-[11.5rem] flex-col rounded-md bg-white p-2 font-galmuri text-lg text-black shadow-circle"
+    >
+      <button
+        onClick={() => {
+          onSelected(1);
+        }}
+        className="mb-1 select-none border-b-2 border-gray-100 py-1 text-right"
+      >
+        짧은 텍스트 메모
+      </button>
+      <button
+        onClick={() => {
+          onSelected(0);
+        }}
+        className="select-none py-1 text-right"
+      >
+        텍스트 메모
+      </button>
+    </motion.div>
   );
 };

@@ -98,7 +98,7 @@ export const TextMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-default" className="flex h-24 w-full">
-        <label className="line-clamp-6 cursor-text whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-[8] cursor-text whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>

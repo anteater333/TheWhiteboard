@@ -31,13 +31,6 @@ export default async function BoardPage({
       >
         {/* The Whiteboard */}
         <Board />
-
-        <div className="absolute bottom-6 right-4 w-fit">
-          <AddButton />
-        </div>
-        <div className="absolute bottom-6 left-4 w-fit">
-          <OnGoingMemoButton />
-        </div>
       </div>
       <div
         id="board-footer"

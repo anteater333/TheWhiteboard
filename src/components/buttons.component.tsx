@@ -22,7 +22,7 @@ export const OnGoingMemoButton = function (props: ButtonType) {
       {...props}
       className="flex h-20 w-20 items-center justify-center rounded-full bg-stone-100 pl-1 text-center font-galmuri text-5xl text-black shadow-circle active:shadow-none"
     >
-      <span className="pb-2 text-center">ㅁ</span>
+      <span className="pb-1 text-center">ㅁ</span>
     </button>
   );
 };
