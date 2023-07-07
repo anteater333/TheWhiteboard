@@ -12,6 +12,8 @@ import {
 import { AddButton, OnGoingMemoButton } from "./buttons.component";
 import { Memo } from "./memo.component";
 import { motion } from "framer-motion";
+import { MemoEditModal } from "./modal.component";
+import { MemoType } from "@/types/types";
 
 /**
  * 메모 너비 200px
@@ -47,6 +49,12 @@ export const Board = function () {
   const [isDragging, setIsDragging] = useState(false);
 
   const [showAddList, setShowAddList] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({
+    memoType: 0,
+    content: "",
+  });
 
   /** 1단계 확대 */
   const scaleUp = useCallback(() => {
@@ -200,9 +208,36 @@ export const Board = function () {
         <div className="">{`${posX.toFixed(2)}, ${posY.toFixed(2)}`}</div>
         <div>{`${scale.toFixed(2)}`}</div>
       </div> */}
+
+      {/* 새 메모 입력 모달 */}
+      <MemoEditModal visibilityState={[showEditModal, setShowEditModal]} />
+
+      {/* 메모 추가 관련 버튼 */}
+      <>
+        <div className="absolute bottom-6 right-4 z-30 flex w-fit flex-col items-end">
+          {showAddList ? (
+            <AddMemoList
+              onSelected={(selected) => {
+                setShowAddList(false);
+                setShowEditModal(true);
+              }}
+            />
+          ) : undefined}
+          <AddButton
+            isActive={showAddList}
+            onClick={() => {
+              setShowAddList(!showAddList);
+            }}
+          />
+        </div>
+        <div className="absolute bottom-6 left-4 z-30 w-fit">
+          <OnGoingMemoButton />
+        </div>
+      </>
+
       <div
         id="board-controller-container"
-        className="absolute right-4 top-2 z-50 flex flex-col text-center font-galmuri text-2xl font-bold"
+        className="absolute right-4 top-2 z-40 flex flex-col text-center font-galmuri text-2xl font-bold"
       >
         <button onClick={() => scaleUp()}>+</button>
         <label className="pb-1 pt-2 text-base">{scaleLevel}</label>
@@ -315,24 +350,6 @@ export const Board = function () {
             positionY: 448,
           }}
         />
-      </div>
-
-      <div className="absolute bottom-6 right-4 flex w-fit flex-col items-end">
-        {showAddList ? (
-          <AddMemoList
-            onSelected={(selected) => {
-              setShowAddList(showAddList);
-            }}
-          />
-        ) : undefined}
-        <AddButton
-          onClick={() => {
-            setShowAddList(!showAddList);
-          }}
-        />
-      </div>
-      <div className="absolute bottom-6 left-4 w-fit">
-        <OnGoingMemoButton />
       </div>
     </>
   );
