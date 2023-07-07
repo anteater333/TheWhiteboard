@@ -1,9 +1,12 @@
 import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import { motion } from "framer-motion";
 
 type ButtonType = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
->;
+> & {
+  isActive?: boolean;
+};
 
 export const AddButton = function (props: ButtonType) {
   return (
@@ -11,7 +14,14 @@ export const AddButton = function (props: ButtonType) {
       {...props}
       className="flex h-20 w-20 items-center justify-center rounded-full bg-black text-center text-6xl text-white shadow-circle active:shadow-none"
     >
-      <span className="pb-2 text-center">+</span>
+      <motion.div
+        className="h-16 w-16 text-center leading-[3.4rem]"
+        animate={{
+          rotate: props.isActive ? 180 : 0,
+        }}
+      >
+        +
+      </motion.div>
     </button>
   );
 };
