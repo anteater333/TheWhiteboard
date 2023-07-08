@@ -19,13 +19,13 @@ import { MemoType } from "@/types/types";
  * 메모 너비 200px
  * 메모 높이 164px (기본)
  */
-const testMemoPositionData = {
+const memoSize = {
   w: 200,
   h: 164,
 };
 
-const boardWidth = 2000;
-const boardHeight = 1240;
+const boardWidth = memoSize.w * 10;
+const boardHeight = memoSize.h * 7.5;
 
 const borderPadding = 32;
 
@@ -56,7 +56,7 @@ export const Board = function () {
   const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({
     memoType: 0,
   });
-  const [isPosting, setIsPosting] = useState(false);
+  const [isPostingMode, setIsPostingMode] = useState(false);
 
   /** 1단계 확대 */
   const scaleUp = useCallback(() => {
@@ -328,8 +328,8 @@ export const Board = function () {
               createdAt: Date().toString(),
               votes: [],
               referencedMemo: [],
-              positionX: testMemoPositionData.w,
-              positionY: testMemoPositionData.h,
+              positionX: memoSize.w,
+              positionY: memoSize.h,
             }}
           />
           <Memo
@@ -344,7 +344,7 @@ export const Board = function () {
               createdAt: Date().toString(),
               votes: [],
               referencedMemo: [],
-              positionX: testMemoPositionData.w,
+              positionX: memoSize.w,
               positionY: 0,
             }}
           />
@@ -361,7 +361,7 @@ export const Board = function () {
               votes: [],
               referencedMemo: [],
               positionX: 0,
-              positionY: testMemoPositionData.h,
+              positionY: memoSize.h,
             }}
           />
           <Memo
