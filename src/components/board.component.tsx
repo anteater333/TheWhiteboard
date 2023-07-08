@@ -5,27 +5,19 @@ import {
   MouseEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   WheelEvent,
 } from "react";
 import { AddButton, OnGoingMemoButton } from "./buttons.component";
-import { Memo } from "./memo.component";
+import { Memo, memoHeight, memoWidth } from "./memo.component";
 import { motion } from "framer-motion";
 import { MemoEditModal } from "./modal.component";
 import { MemoType } from "@/types/types";
 
-/**
- * 메모 너비 200px
- * 메모 높이 164px (기본)
- */
-const memoSize = {
-  w: 200,
-  h: 164,
-};
-
-const boardWidth = memoSize.w * 10;
-const boardHeight = memoSize.h * 7.5;
+const boardWidth = memoWidth * 10;
+const boardHeight = memoHeight * 7.5;
 
 const borderPadding = 32;
 
@@ -206,6 +198,88 @@ export const Board = function () {
   }, [posX, posY, scale, isDragging]);
   // #endregion
 
+  // #region For posting mode
+  /** Posting mode 진입 시 board에 점선 표시 */
+  useEffect(() => {
+    setIsPostingMode(!!editingMemo.content);
+  }, [editingMemo.content]);
+
+  const BoardGrid = useMemo(() => {
+    if (!isPostingMode) return;
+
+    return (
+      <>
+        <>
+          {/* 세로줄 메인 */}
+          {Array(9)
+            .fill(0)
+            .map((_, idx) => {
+              return (
+                <div
+                  key={`grid-vertical-main-${idx}`}
+                  className="absolute border-r-2 border-dashed border-stone-200"
+                  style={{
+                    left: `${memoWidth * idx}px`,
+                    width: `${memoWidth}px`,
+                    height: `${boardHeight}px`,
+                  }}
+                />
+              );
+            })}
+          {/* 세로줄 서브 */}
+          {Array(10 * 4)
+            .fill(0)
+            .map((_, idx) => {
+              return (
+                <div
+                  key={`grid-vertical-sub-${idx}`}
+                  className="absolute border-r-2 border-dotted border-stone-200"
+                  style={{
+                    left: `${(memoWidth / 4) * idx}px`,
+                    width: `${memoWidth / 4}px`,
+                    height: `${boardHeight}px`,
+                  }}
+                />
+              );
+            })}
+          {/* 가로줄 메인 */}
+          {Array(7)
+            .fill(0)
+            .map((_, idx) => {
+              return (
+                <div
+                  key={`grid-horizontal-main-${idx}`}
+                  className="absolute border-b-2 border-dashed border-stone-200"
+                  style={{
+                    top: `${memoHeight * idx}px`,
+                    width: `${boardWidth}px`,
+                    height: `${memoHeight}px`,
+                  }}
+                />
+              );
+            })}
+          {/* 가로줄 서브 */}
+          {Array(7.25 * 4)
+            .fill(0)
+            .map((_, idx) => {
+              return (
+                <div
+                  key={`grid-horizontal-sub-${idx}`}
+                  className="absolute border-b-2 border-dotted border-stone-200"
+                  style={{
+                    top: `${(memoHeight / 4) * idx}px`,
+                    width: `${boardWidth}px`,
+                    height: `${memoHeight / 4}px`,
+                  }}
+                />
+              );
+            })}
+        </>
+      </>
+    );
+  }, [isPostingMode]);
+  // #endregion
+
   return (
     <>
       {/* <div id="debugger" className="fixed left-1/2 top-1/2 z-50 text-5xl">
@@ -296,9 +370,10 @@ export const Board = function () {
         }}
       >
         <div
-          className="relative rounded-lg border-2 border-stone-200 bg-stone-100"
+          className="relative overflow-hidden rounded-lg border-2 border-stone-200 bg-stone-100"
           style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
         >
+          {BoardGrid}
           {/* 이하 테스트 데이터 */}
           <Memo
             memo={{
@@ -328,8 +403,8 @@ export const Board = function () {
               createdAt: Date().toString(),
               votes: [],
               referencedMemo: [],
-              positionX: memoSize.w,
-              positionY: memoSize.h,
+              positionX: memoWidth,
+              positionY: memoHeight,
             }}
           />
           <Memo
@@ -344,7 +419,7 @@ export const Board = function () {
               createdAt: Date().toString(),
               votes: [],
               referencedMemo: [],
-              positionX: memoSize.w,
+              positionX: memoWidth,
               positionY: 0,
             }}
           />
@@ -356,12 +431,12 @@ export const Board = function () {
               memoType: 0,
               title: "Title, Deprecated.",
               content:
-                "test\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+                "test\n신新 제논의 역설\n\n일을 끝마칠 때가sfsafasfasfsaf 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n일을 끝afsafajdsfjlkdsajflksaㄻㅇ니ㅏㄹ멍ㄴ리ㅏㅁㅇ너ㅣㅏㄻ너리ㅏㅁ너리ㅏㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏ렁ㄴ미ㅏ런미ㅏ렁ㄴ미ㅏㄹ마칠 때가 가까워 올 수록 진행속\n도가 느려지는 adsfasfa 현상afdf",
               createdAt: Date().toString(),
               votes: [],
               referencedMemo: [],
               positionX: 0,
-              positionY: memoSize.h,
+              positionY: memoHeight,
             }}
           />
           <Memo
@@ -371,12 +446,27 @@ export const Board = function () {
               },
               memoType: 1,
               content:
-                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
+                "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
               createdAt: Date().toString(),
               votes: [],
               referencedMemo: [],
               positionX: 200,
-              positionY: 448,
+              positionY: memoHeight * 2.5,
+            }}
+          />
+          <Memo
+            memo={{
+              user: {
+                nickname: "Tester",
+              },
+              memoType: 1,
+              content:
+                "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
+              createdAt: Date().toString(),
+              votes: [],
+              referencedMemo: [],
+              positionX: 0,
+              positionY: memoHeight * 2.5,
             }}
           />
         </div>

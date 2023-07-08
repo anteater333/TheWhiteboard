@@ -1,36 +1,51 @@
 import { MemoType } from "@/types/types";
 import { formatDate } from "@/utils/formatter";
 import Image from "next/image";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import shareBtn from "../../public/svg/share.svg";
+
+/**
+ * 메모 너비 200px
+ * 메모 높이 180px
+ */
+export const memoWidth = 200;
+export const memoHeight = 180;
+const memoMargin = 8;
 
 type MemoProp = {
   memo: Partial<MemoType>;
 };
 
 export const Memo = function ({ memo }: MemoProp) {
+  /** 메모 컴포넌트 높이 배율 */
+  const [heightScale, setHeightScale] = useState(1);
+
   /** 지정된 메모 타입에 따라 내용 부분 다르게 렌더링 */
   const MemoContent = useMemo(() => {
-    if (!memo || !memo.memoType) return TextMemo;
+    if (!memo.memoType) return TextMemo;
 
     switch (memo.memoType) {
       case 0: // 일반 텍스트 메모
         return TextMemo;
       case 1: // 짧은 텍스트 메모
+        setHeightScale(0.5);
         return TextShortMemo;
       default:
         return TextMemo;
     }
-  }, [memo]);
+  }, [memo.memoType]);
 
   return (
     <div
       id="memo-container"
-      className="absolute m-2 flex h-fit w-[11.5rem] flex-col rounded-sm border-gray-200 bg-slate-50 px-1 py-1 shadow-sm"
+      className="absolute flex select-none flex-col rounded-sm border-gray-200 bg-slate-50 px-1 py-1 shadow-sm"
       style={{
         top: memo.positionY,
         left: memo.positionX,
+        margin: `${memoMargin}px`,
+        width: `${memoWidth - memoMargin * 2}px`,
+        height: `${memoHeight * heightScale - memoMargin * 2}px`,
       }}
       onMouseDown={(event) => {
         event.stopPropagation();
@@ -97,8 +112,8 @@ export const Memo = function ({ memo }: MemoProp) {
 export const TextMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
-      <div id="memo-content-text-default" className="flex h-24 w-full">
-        <label className="line-clamp-[8] cursor-text whitespace-pre-wrap text-2xs">
+      <div id="memo-content-text-default" className="flex h-[6.75rem] w-full">
+        <label className="line-clamp-[9] whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>
@@ -110,7 +125,7 @@ export const TextShortMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-small" className="flex h-6 w-full">
-        <label className="line-clamp-2 cursor-text whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-2 whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>

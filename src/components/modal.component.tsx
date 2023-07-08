@@ -63,7 +63,7 @@ export const MemoEditModal = function ({
 
   /** 오버레이 부분 클릭 시 작성 중 메모 처리 */
   const handleOnOverlayClick = useCallback(() => {
-    if (memoTextContent === "" || memoTextContent === memoObject.content) {
+    if (memoTextContent === memoObject.content) {
       setIsVisible(false);
     } else if (confirm("작성한 메모가 지워집니다.")) {
       setMemoTextContent(memoObject.content ?? "");
