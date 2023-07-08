@@ -137,7 +137,7 @@ export const MemoEditModal = function ({
               >
                 <button
                   className="rounded-md border-2 border-black px-2 transition-all enabled:hover:bg-black enabled:hover:text-white disabled:opacity-50"
-                  disabled={isTextLengthOver}
+                  disabled={isTextLengthOver || memoTextContent.length === 0}
                   onClick={() => {
                     setIsVisible(false);
 

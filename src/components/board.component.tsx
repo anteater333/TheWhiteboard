@@ -27,6 +27,8 @@ const testMemoPositionData = {
 const boardWidth = 2000;
 const boardHeight = 1240;
 
+const borderPadding = 32;
+
 const numOfLevels = 8;
 const maxScale = 8;
 const minScale = maxScale / numOfLevels;
@@ -41,8 +43,8 @@ export const Board = function () {
 
   const [scaleLevel, setScaleLevel] = useState(1);
   const [scale, setScale] = useState(scaleLevel * minScale);
-  const [posX, setPosX] = useState(0);
-  const [posY, setPosY] = useState(0);
+  const [posX, setPosX] = useState(-(borderPadding / 2));
+  const [posY, setPosY] = useState(-(borderPadding / 2));
   const [startMouseX, setStartMouseX] = useState(0);
   const [startMouseY, setStartMouseY] = useState(0);
 
@@ -54,6 +56,7 @@ export const Board = function () {
   const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({
     memoType: 0,
   });
+  const [isPosting, setIsPosting] = useState(false);
 
   /** 1단계 확대 */
   const scaleUp = useCallback(() => {
@@ -174,12 +177,14 @@ export const Board = function () {
       const negativeXThreshold =
         window.innerWidth / scale -
         (boardWidth * (scale + 1)) / (2 * scale) -
-        margin;
+        margin -
+        borderPadding;
       const negativeYThreshold =
         window.innerHeight / scale -
         (boardHeight * (scale + 1)) / (2 * scale) -
         112 / scale - // Header/Footer 높이 감안
-        margin;
+        margin -
+        borderPadding;
 
       if (posX > positiveXThreshold) {
         setPosX(positiveXThreshold);
@@ -278,97 +283,103 @@ export const Board = function () {
         id="board"
         tabIndex={1}
         ref={boardRef}
-        className="absolute z-0 rounded-lg border-gray-300 bg-stone-100 shadow-md outline-none transition-transform"
+        className="absolute z-0 flex items-center justify-center rounded-lg bg-stone-100 shadow-circle outline-none transition-transform"
         onWheel={handleOnWheel}
         onMouseDown={handleOnMouseDown}
         onMouseUp={handleOnMouseUp}
         onMouseMove={handleOnMouseMove}
         onKeyDown={handleOnKeyDown}
         style={{
-          width: `${boardWidth}px`,
-          height: `${boardHeight}px`,
+          width: `${boardWidth + borderPadding}px`,
+          height: `${boardHeight + borderPadding}px`,
           transform: `scale(${scale}) translate(${posX}px, ${posY}px)`,
         }}
       >
-        <Memo
-          memo={{
-            user: {
-              nickname: "Tester",
-            },
-            memoType: 0,
-            title: "Title, Deprecated.",
-            content:
-              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-            createdAt: Date().toString(),
-            votes: [],
-            referencedMemo: [],
-            positionX: 0,
-            positionY: 0,
-          }}
-        />
-        <Memo
-          memo={{
-            user: {
-              nickname: "Tester",
-            },
-            memoType: 0,
-            title: "Title, Deprecated.",
-            content:
-              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-            createdAt: Date().toString(),
-            votes: [],
-            referencedMemo: [],
-            positionX: testMemoPositionData.w,
-            positionY: testMemoPositionData.h,
-          }}
-        />
-        <Memo
-          memo={{
-            user: {
-              nickname: "Tester",
-            },
-            memoType: 0,
-            title: "Title, Deprecated.",
-            content:
-              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-            createdAt: Date().toString(),
-            votes: [],
-            referencedMemo: [],
-            positionX: testMemoPositionData.w,
-            positionY: 0,
-          }}
-        />
-        <Memo
-          memo={{
-            user: {
-              nickname: "Tester",
-            },
-            memoType: 0,
-            title: "Title, Deprecated.",
-            content:
-              "test\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-            createdAt: Date().toString(),
-            votes: [],
-            referencedMemo: [],
-            positionX: 0,
-            positionY: testMemoPositionData.h,
-          }}
-        />
-        <Memo
-          memo={{
-            user: {
-              nickname: "Tester",
-            },
-            memoType: 1,
-            content:
-              "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-            createdAt: Date().toString(),
-            votes: [],
-            referencedMemo: [],
-            positionX: 200,
-            positionY: 448,
-          }}
-        />
+        <div
+          className="relative rounded-lg border-2 border-stone-200 bg-stone-100"
+          style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
+        >
+          {/* 이하 테스트 데이터 */}
+          <Memo
+            memo={{
+              user: {
+                nickname: "Tester",
+              },
+              memoType: 0,
+              title: "Title, Deprecated.",
+              content:
+                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+              createdAt: Date().toString(),
+              votes: [],
+              referencedMemo: [],
+              positionX: 0,
+              positionY: 0,
+            }}
+          />
+          <Memo
+            memo={{
+              user: {
+                nickname: "Tester",
+              },
+              memoType: 0,
+              title: "Title, Deprecated.",
+              content:
+                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+              createdAt: Date().toString(),
+              votes: [],
+              referencedMemo: [],
+              positionX: testMemoPositionData.w,
+              positionY: testMemoPositionData.h,
+            }}
+          />
+          <Memo
+            memo={{
+              user: {
+                nickname: "Tester",
+              },
+              memoType: 0,
+              title: "Title, Deprecated.",
+              content:
+                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+              createdAt: Date().toString(),
+              votes: [],
+              referencedMemo: [],
+              positionX: testMemoPositionData.w,
+              positionY: 0,
+            }}
+          />
+          <Memo
+            memo={{
+              user: {
+                nickname: "Tester",
+              },
+              memoType: 0,
+              title: "Title, Deprecated.",
+              content:
+                "test\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+              createdAt: Date().toString(),
+              votes: [],
+              referencedMemo: [],
+              positionX: 0,
+              positionY: testMemoPositionData.h,
+            }}
+          />
+          <Memo
+            memo={{
+              user: {
+                nickname: "Tester",
+              },
+              memoType: 1,
+              content:
+                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
+              createdAt: Date().toString(),
+              votes: [],
+              referencedMemo: [],
+              positionX: 200,
+              positionY: 448,
+            }}
+          />
+        </div>
       </div>
     </>
   );
