@@ -1,29 +1,49 @@
+import { MemoType } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 type ModalProp = {
   /** Inject visibility state and its dispatcher to modal */
   visibilityState: [boolean, Dispatch<SetStateAction<boolean>>];
+  /** Additional action on sumbit */
   onSubmit?: () => void;
 };
 
 type MemoEditModalProp = ModalProp & {
-  initialMemoType?: number;
+  memoObjectState: [
+    Partial<MemoType>,
+    Dispatch<SetStateAction<Partial<MemoType>>>
+  ];
 };
 
 export const MemoEditModal = function ({
   visibilityState: [isVisible, setIsVisible],
-  initialMemoType = 0,
+  memoObjectState: [memoObject, setMemoObject],
   onSubmit,
 }: MemoEditModalProp) {
+  /** 모달 내에서 변경점을 미리 담아둘 state들 */
   const [memoTextContent, setMemoTextContent] = useState("");
-  const [memoType, setMemoType] = useState(initialMemoType);
+  const [memoType, setMemoType] = useState(0);
+
+  /** memoType에 의해 변경되는 값들 */
   const [memoTextLimit, setMemoTextLimit] = useState(0);
   const [memoTextRows, setMemoTextRows] = useState(0);
   const [isTextLengthOver, setIsTextLengthOver] = useState(false);
 
   useEffect(() => {
-    switch (memoType) {
+    setMemoTextContent(memoObject.content || "");
+  }, [memoObject.content]);
+
+  useEffect(() => {
+    setMemoType(memoObject.memoType || 0);
+
+    switch (memoObject.memoType) {
       case 0:
         setMemoTextLimit(200);
         setMemoTextRows(6);
@@ -35,11 +55,21 @@ export const MemoEditModal = function ({
       default:
         break;
     }
-  }, [memoType]);
+  }, [memoObject.memoType]);
 
   useEffect(() => {
     setIsTextLengthOver(memoTextContent.length > memoTextLimit);
   }, [memoTextContent, memoTextLimit]);
+
+  /** 오버레이 부분 클릭 시 작성 중 메모 처리 */
+  const handleOnOverlayClick = useCallback(() => {
+    if (memoTextContent === "" || memoTextContent === memoObject.content) {
+      setIsVisible(false);
+    } else if (confirm("작성한 메모가 지워집니다.")) {
+      setMemoTextContent(memoObject.content ?? "");
+      setIsVisible(false);
+    }
+  }, [memoObject.content, memoTextContent, setIsVisible]);
 
   return (
     <AnimatePresence>
@@ -54,9 +84,7 @@ export const MemoEditModal = function ({
         >
           <div
             id="modal-overlay"
-            onClick={() => {
-              setIsVisible(false);
-            }}
+            onClick={handleOnOverlayClick}
             className="absolute h-full w-full cursor-pointer bg-black bg-opacity-75"
           />
 
@@ -73,7 +101,7 @@ export const MemoEditModal = function ({
             <div id="memo-edit-modal-body" className="border-b-2 py-2">
               <textarea
                 id="memo-edit-content"
-                className="min-h-0 w-full resize-none text-xl focus:outline-none"
+                className="min-h-0 w-full resize-none bg-transparent text-xl focus:outline-none"
                 value={memoTextContent}
                 onChange={(event) => setMemoTextContent(event.target.value)}
                 rows={memoTextRows}
@@ -89,7 +117,7 @@ export const MemoEditModal = function ({
                   isTextLengthOver
                     ? "font-bold text-red-500"
                     : "font-normal text-black"
-                }`}
+                } ${"w-20"}`}
               >
                 {memoTextContent.length}/{memoTextLimit}
               </div>
@@ -97,7 +125,7 @@ export const MemoEditModal = function ({
                 <select
                   value={memoType}
                   onChange={(event) => setMemoType(+event.target.value)}
-                  className="pl-1 pr-2"
+                  className="pl-2 pr-2"
                 >
                   <option value={0}>텍스트 메모</option>
                   <option value={1}>짧은 텍스트 메모</option>
@@ -112,6 +140,12 @@ export const MemoEditModal = function ({
                   disabled={isTextLengthOver}
                   onClick={() => {
                     setIsVisible(false);
+
+                    setMemoObject({
+                      memoType: memoType,
+                      content: memoTextContent,
+                    });
+
                     if (onSubmit) onSubmit();
                   }}
                 >

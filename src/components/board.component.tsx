@@ -53,7 +53,6 @@ export const Board = function () {
 
   const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({
     memoType: 0,
-    content: "",
   });
 
   /** 1단계 확대 */
@@ -207,10 +206,14 @@ export const Board = function () {
       {/* <div id="debugger" className="fixed left-1/2 top-1/2 z-50 text-5xl">
         <div className="">{`${posX.toFixed(2)}, ${posY.toFixed(2)}`}</div>
         <div>{`${scale.toFixed(2)}`}</div>
+        <div>{`${JSON.stringify(editingMemo)}`}</div>
       </div> */}
 
       {/* 새 메모 입력 모달 */}
-      <MemoEditModal visibilityState={[showEditModal, setShowEditModal]} />
+      <MemoEditModal
+        visibilityState={[showEditModal, setShowEditModal]}
+        memoObjectState={[editingMemo, setEditingMemo]}
+      />
 
       {/* 메모 추가 관련 버튼 */}
       <>
@@ -218,8 +221,17 @@ export const Board = function () {
           {showAddList ? (
             <AddMemoList
               onSelected={(selected) => {
+                if (
+                  !editingMemo.content ||
+                  (editingMemo.content !== "" &&
+                    confirm("작성 중인 메모가 지워집니다."))
+                ) {
+                  // 새 메모 작성에 돌입.
+                  setEditingMemo({ memoType: selected });
+                  setShowEditModal(true);
+                }
+
                 setShowAddList(false);
-                setShowEditModal(true);
               }}
             />
           ) : undefined}
@@ -231,7 +243,14 @@ export const Board = function () {
           />
         </div>
         <div className="absolute bottom-6 left-4 z-30 w-fit">
-          <OnGoingMemoButton />
+          {editingMemo.content ? (
+            <OnGoingMemoButton
+              onClick={() => {
+                setShowAddList(false);
+                setShowEditModal(true);
+              }}
+            />
+          ) : undefined}
         </div>
       </>
 
