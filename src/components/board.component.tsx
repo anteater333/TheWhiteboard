@@ -74,11 +74,12 @@ export const Board = function () {
     );
   }, [editingMemo, isPostingMode, editingMemoPosX, editingMemoPosY]);
 
-  /** Posting mode 진입 시 board에 점선 표시 */
+  /** 메모 입력 확인 시 Posting mode 진입 */
   useEffect(() => {
     setIsPostingMode(!!editingMemo.content);
   }, [editingMemo.content]);
 
+  /** Posting mode에서 board에 점선 표시 */
   const BoardGrid = useMemo(() => {
     if (!isPostingMode) return;
 
@@ -151,9 +152,10 @@ export const Board = function () {
   );
   // #endregion
 
+  // #region Board 이동&확대 관련
   /** 1단계 확대 */
   const scaleUp = useCallback(() => {
-    if (scaleLevel >= maxScale) {
+    if (scaleLevel >= maxScale || isPostingMode) {
       return;
     }
 
@@ -161,11 +163,11 @@ export const Board = function () {
     boardRef.current?.classList.add("transition-transform");
     setScale(newScale * minScale);
     setScaleLevel(newScale);
-  }, [scaleLevel]);
+  }, [scaleLevel, isPostingMode]);
 
   /** 1단계 축소 */
   const scaleDown = useCallback(() => {
-    if (scaleLevel <= 1) {
+    if (scaleLevel <= 1 || isPostingMode) {
       return;
     }
 
@@ -173,7 +175,21 @@ export const Board = function () {
     boardRef.current?.classList.add("transition-transform");
     setScale(newScale * minScale);
     setScaleLevel(newScale);
-  }, [scaleLevel]);
+  }, [scaleLevel, isPostingMode]);
+
+  /** Board 이동/확대 초기화 */
+  const resetBoard = useCallback(() => {
+    setScale(1);
+    setScaleLevel(1);
+    setPosX(0);
+    setPosY(0);
+    setIsDragging(false);
+  }, []);
+
+  /** Posting mode 진입 시 화면 확대 초기화 및 고정 */
+  useEffect(() => {
+    if (isPostingMode) resetBoard();
+  }, [isPostingMode, resetBoard]);
 
   /** Board 영역에 대한 Wheel 행동 처리 */
   const handleBoardOnWheel = useCallback(
@@ -191,7 +207,6 @@ export const Board = function () {
     [scaleDown, scaleUp]
   );
 
-  // #region Board 이동 관련
   const handleBoardOnKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.ctrlKey || event.shiftKey || event.altKey) {
@@ -359,16 +374,7 @@ export const Board = function () {
         <button onClick={() => scaleUp()}>+</button>
         <label className="pb-1 pt-2 text-base">{scaleLevel}</label>
         <button onClick={() => scaleDown()}>-</button>
-        <button
-          className="mt-1"
-          onClick={() => {
-            setScale(1);
-            setScaleLevel(1);
-            setPosX(0);
-            setPosY(0);
-            setIsDragging(false);
-          }}
-        >
+        <button className="mt-1" onClick={resetBoard}>
           ↻
         </button>
       </div>
