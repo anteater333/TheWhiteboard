@@ -15,9 +15,10 @@ const memoMargin = 8;
 
 type MemoProp = {
   memo: Partial<MemoType>;
+  isPostingMode?: boolean;
 };
 
-export const Memo = function ({ memo }: MemoProp) {
+export const Memo = function ({ memo, isPostingMode }: MemoProp) {
   /** 메모 컴포넌트 높이 배율 */
   const [heightScale, setHeightScale] = useState(1);
 
@@ -46,9 +47,11 @@ export const Memo = function ({ memo }: MemoProp) {
         margin: `${memoMargin}px`,
         width: `${memoWidth - memoMargin * 2}px`,
         height: `${memoHeight * heightScale - memoMargin * 2}px`,
+        border: isPostingMode ? `2px dashed black` : ``,
+        zIndex: isPostingMode ? `30` : `auto`,
       }}
       onMouseDown={(event) => {
-        event.stopPropagation();
+        if (!isPostingMode) event.stopPropagation();
       }}
     >
       <div
@@ -68,7 +71,9 @@ export const Memo = function ({ memo }: MemoProp) {
         className="flex h-5 min-w-0 flex-col justify-end border-t-[1px] font-galmuri text-3xs font-bold"
       >
         <div id="memo-footer-slot-1" className="">
-          <div id="memo-date">{formatDate(new Date(memo.createdAt!))}</div>
+          <div id="memo-date">
+            {memo.createdAt ? formatDate(new Date(memo.createdAt)) : undefined}
+          </div>
         </div>
         <div id="memo-footer-slot-2" className="flex">
           <div id="memo-votes-conatiner" className="flex">

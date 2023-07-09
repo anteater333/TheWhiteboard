@@ -15,6 +15,7 @@ import { Memo, memoHeight, memoWidth } from "./memo.component";
 import { motion } from "framer-motion";
 import { MemoEditModal } from "./modal.component";
 import { MemoType } from "@/types/types";
+import { set } from "date-fns";
 
 const boardWidth = memoWidth * 10;
 const boardHeight = memoHeight * 7.5;
@@ -45,10 +46,110 @@ export const Board = function () {
   const [showAddList, setShowAddList] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // #region For posting mode
   const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({
     memoType: 0,
+    createdAt: Date().toString(),
+    user: { nickname: "TesterEditor" },
   });
+  const [editingMemoPosX, setEditingMemoPosX] = useState(0);
+  const [editingMemoPosY, setEditingMemoPosY] = useState(0);
   const [isPostingMode, setIsPostingMode] = useState(false);
+
+  /** Posting mode에서 사용하는 자리잡기 용도 메모 컴포넌트 */
+  const EditingMemoComponent = useMemo(() => {
+    if (!isPostingMode) return;
+
+    return (
+      <Memo
+        memo={{
+          positionX: editingMemoPosX,
+          positionY: editingMemoPosY,
+          votes: [],
+          referencedMemo: [],
+          ...editingMemo,
+        }}
+        isPostingMode={true}
+      />
+    );
+  }, [editingMemo, isPostingMode, editingMemoPosX, editingMemoPosY]);
+
+  /** Posting mode 진입 시 board에 점선 표시 */
+  useEffect(() => {
+    setIsPostingMode(!!editingMemo.content);
+  }, [editingMemo.content]);
+
+  const BoardGrid = useMemo(() => {
+    if (!isPostingMode) return;
+
+    return (
+      <>
+        <>
+          {/* 세로줄 서브 */}
+          {Array(10 * 4)
+            .fill(0)
+            .map((_, idx) => {
+              return (
+                <div
+                  key={`grid-vertical-${idx}`}
+                  className="absolute border-stone-300"
+                  style={{
+                    left: `${(memoWidth / 4) * idx}px`,
+                    width: `${memoWidth / 4}px`,
+                    height: `${boardHeight}px`,
+                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
+                    borderRightWidth: idx % 4 === 3 ? `2px` : `1px`,
+                  }}
+                />
+              );
+            })}
+          {/* 가로줄 서브 */}
+          {Array(7.25 * 4)
+            .fill(0)
+            .map((_, idx) => {
+              return (
+                <div
+                  key={`grid-horizontal-${idx}`}
+                  className="absolute border-stone-300"
+                  style={{
+                    top: `${(memoHeight / 4) * idx}px`,
+                    width: `${boardWidth}px`,
+                    height: `${memoHeight / 4}px`,
+                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
+                    borderBottomWidth: idx % 4 === 3 ? `2px` : `1px`,
+                  }}
+                />
+              );
+            })}
+        </>
+      </>
+    );
+  }, [isPostingMode]);
+
+  const calcPostingModePosition = useCallback(
+    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+      if (!isPostingMode) {
+        return;
+      }
+
+      const bounds = event.currentTarget.getBoundingClientRect();
+      const mouseX =
+        event.clientX / scale - bounds.left / scale - memoWidth / 3;
+      const mouseY =
+        event.clientY / scale - bounds.top / scale - memoHeight / 8;
+
+      const factorX = memoWidth / 4;
+      const factorY = memoHeight / 4;
+
+      const posX = factorX * Math.floor(mouseX / factorX);
+      const posY = factorY * Math.floor(mouseY / factorY);
+
+      setEditingMemoPosX(posX);
+      setEditingMemoPosY(posY);
+    },
+    [scale, isPostingMode]
+  );
+  // #endregion
 
   /** 1단계 확대 */
   const scaleUp = useCallback(() => {
@@ -75,7 +176,7 @@ export const Board = function () {
   }, [scaleLevel]);
 
   /** Board 영역에 대한 Wheel 행동 처리 */
-  const handleOnWheel = useCallback(
+  const handleBoardOnWheel = useCallback(
     (event: WheelEvent<HTMLDivElement>) => {
       event.preventDefault();
       event.stopPropagation();
@@ -91,7 +192,7 @@ export const Board = function () {
   );
 
   // #region Board 이동 관련
-  const handleOnKeyDown = useCallback(
+  const handleBoardOnKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.ctrlKey || event.shiftKey || event.altKey) {
         return;
@@ -115,7 +216,7 @@ export const Board = function () {
     [scale]
   );
 
-  const handleOnMouseDown = useCallback(
+  const handleBoardOnMouseDown = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
       boardRef.current?.classList.remove("transition-transform");
 
@@ -126,12 +227,12 @@ export const Board = function () {
     []
   );
 
-  const handleOnMouseUp = useCallback(() => {
+  const handleBoardOnMouseUp = useCallback(() => {
     setIsDragging(false);
     setShowAddList(false);
   }, []);
 
-  const handleOnMouseMove = useCallback(
+  const handleBoardOnMouseMove = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
       if (!isDragging) {
         return;
@@ -196,60 +297,6 @@ export const Board = function () {
       clearTimeout(timeoutId);
     };
   }, [posX, posY, scale, isDragging]);
-  // #endregion
-
-  // #region For posting mode
-  /** Posting mode 진입 시 board에 점선 표시 */
-  useEffect(() => {
-    setIsPostingMode(!!editingMemo.content);
-  }, [editingMemo.content]);
-
-  const BoardGrid = useMemo(() => {
-    if (!isPostingMode) return;
-
-    return (
-      <>
-        <>
-          {/* 세로줄 서브 */}
-          {Array(10 * 4)
-            .fill(0)
-            .map((_, idx) => {
-              return (
-                <div
-                  key={`grid-vertical-${idx}`}
-                  className="absolute border-stone-300"
-                  style={{
-                    left: `${(memoWidth / 4) * idx}px`,
-                    width: `${memoWidth / 4}px`,
-                    height: `${boardHeight}px`,
-                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
-                    borderRightWidth: idx % 4 === 3 ? `2px` : `1px`,
-                  }}
-                />
-              );
-            })}
-          {/* 가로줄 서브 */}
-          {Array(7.25 * 4)
-            .fill(0)
-            .map((_, idx) => {
-              return (
-                <div
-                  key={`grid-horizontal-${idx}`}
-                  className="absolute border-stone-300"
-                  style={{
-                    top: `${(memoHeight / 4) * idx}px`,
-                    width: `${boardWidth}px`,
-                    height: `${memoHeight / 4}px`,
-                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
-                    borderBottomWidth: idx % 4 === 3 ? `2px` : `1px`,
-                  }}
-                />
-              );
-            })}
-        </>
-      </>
-    );
-  }, [isPostingMode]);
   // #endregion
 
   return (
@@ -330,11 +377,11 @@ export const Board = function () {
         tabIndex={1}
         ref={boardRef}
         className="absolute z-0 flex items-center justify-center rounded-lg bg-stone-100 shadow-circle outline-none transition-transform"
-        onWheel={handleOnWheel}
-        onMouseDown={handleOnMouseDown}
-        onMouseUp={handleOnMouseUp}
-        onMouseMove={handleOnMouseMove}
-        onKeyDown={handleOnKeyDown}
+        onWheel={handleBoardOnWheel}
+        onMouseDown={handleBoardOnMouseDown}
+        onMouseUp={handleBoardOnMouseUp}
+        onMouseMove={handleBoardOnMouseMove}
+        onKeyDown={handleBoardOnKeyDown}
         style={{
           width: `${boardWidth + borderPadding}px`,
           height: `${boardHeight + borderPadding}px`,
@@ -343,104 +390,109 @@ export const Board = function () {
       >
         <div
           className="relative overflow-hidden rounded-lg border-2 border-stone-300 bg-stone-100"
+          onMouseMove={calcPostingModePosition}
           style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
         >
-          {BoardGrid}
-          {/* 이하 테스트 데이터 */}
-          <Memo
-            memo={{
-              user: {
-                nickname: "Tester",
-              },
-              memoType: 0,
-              title: "Title, Deprecated.",
-              content:
-                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-              createdAt: Date().toString(),
-              votes: [],
-              referencedMemo: [],
-              positionX: 0,
-              positionY: 0,
-            }}
-          />
-          <Memo
-            memo={{
-              user: {
-                nickname: "Tester",
-              },
-              memoType: 0,
-              title: "Title, Deprecated.",
-              content:
-                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-              createdAt: Date().toString(),
-              votes: [],
-              referencedMemo: [],
-              positionX: memoWidth,
-              positionY: memoHeight,
-            }}
-          />
-          <Memo
-            memo={{
-              user: {
-                nickname: "Tester",
-              },
-              memoType: 0,
-              title: "Title, Deprecated.",
-              content:
-                "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-              createdAt: Date().toString(),
-              votes: [],
-              referencedMemo: [],
-              positionX: memoWidth,
-              positionY: 0,
-            }}
-          />
-          <Memo
-            memo={{
-              user: {
-                nickname: "Tester",
-              },
-              memoType: 0,
-              title: "Title, Deprecated.",
-              content:
-                "test\n신新 제논의 역설\n\n일을 끝마칠 때가sfsafasfasfsaf 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n일을 끝afsafajdsfjlkdsajflksaㄻㅇ니ㅏㄹ멍ㄴ리ㅏㅁㅇ너ㅣㅏㄻ너리ㅏㅁ너리ㅏㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏ렁ㄴ미ㅏ런미ㅏ렁ㄴ미ㅏㄹ마칠 때가 가까워 올 수록 진행속\n도가 느려지는 adsfasfa 현상afdf",
-              createdAt: Date().toString(),
-              votes: [],
-              referencedMemo: [],
-              positionX: 0,
-              positionY: memoHeight,
-            }}
-          />
-          <Memo
-            memo={{
-              user: {
-                nickname: "Tester",
-              },
-              memoType: 1,
-              content:
-                "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-              createdAt: Date().toString(),
-              votes: [],
-              referencedMemo: [],
-              positionX: 200,
-              positionY: memoHeight * 2.5,
-            }}
-          />
-          <Memo
-            memo={{
-              user: {
-                nickname: "Tester",
-              },
-              memoType: 1,
-              content:
-                "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-              createdAt: Date().toString(),
-              votes: [],
-              referencedMemo: [],
-              positionX: 0,
-              positionY: memoHeight * 2.5,
-            }}
-          />
+          <>
+            {BoardGrid}
+            {EditingMemoComponent}
+
+            {/* 이하 테스트 데이터 */}
+            <Memo
+              memo={{
+                user: {
+                  nickname: "Tester",
+                },
+                memoType: 0,
+                title: "Title, Deprecated.",
+                content:
+                  "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+                createdAt: Date().toString(),
+                votes: [],
+                referencedMemo: [],
+                positionX: 0,
+                positionY: 0,
+              }}
+            />
+            <Memo
+              memo={{
+                user: {
+                  nickname: "Tester",
+                },
+                memoType: 0,
+                title: "Title, Deprecated.",
+                content:
+                  "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+                createdAt: Date().toString(),
+                votes: [],
+                referencedMemo: [],
+                positionX: memoWidth,
+                positionY: memoHeight,
+              }}
+            />
+            <Memo
+              memo={{
+                user: {
+                  nickname: "Tester",
+                },
+                memoType: 0,
+                title: "Title, Deprecated.",
+                content:
+                  "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
+                createdAt: Date().toString(),
+                votes: [],
+                referencedMemo: [],
+                positionX: memoWidth,
+                positionY: 0,
+              }}
+            />
+            <Memo
+              memo={{
+                user: {
+                  nickname: "Tester",
+                },
+                memoType: 0,
+                title: "Title, Deprecated.",
+                content:
+                  "test\n신新 제논의 역설\n\n일을 끝마칠 때가sfsafasfasfsaf 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n일을 끝afsafajdsfjlkdsajflksaㄻㅇ니ㅏㄹ멍ㄴ리ㅏㅁㅇ너ㅣㅏㄻ너리ㅏㅁ너리ㅏㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏ렁ㄴ미ㅏ런미ㅏ렁ㄴ미ㅏㄹ마칠 때가 가까워 올 수록 진행속\n도가 느려지는 adsfasfa 현상afdf",
+                createdAt: Date().toString(),
+                votes: [],
+                referencedMemo: [],
+                positionX: 0,
+                positionY: memoHeight,
+              }}
+            />
+            <Memo
+              memo={{
+                user: {
+                  nickname: "Tester",
+                },
+                memoType: 1,
+                content:
+                  "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
+                createdAt: Date().toString(),
+                votes: [],
+                referencedMemo: [],
+                positionX: 200,
+                positionY: memoHeight * 2.5,
+              }}
+            />
+            <Memo
+              memo={{
+                user: {
+                  nickname: "Tester",
+                },
+                memoType: 1,
+                content:
+                  "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
+                createdAt: Date().toString(),
+                votes: [],
+                referencedMemo: [],
+                positionX: 0,
+                positionY: memoHeight * 2.5,
+              }}
+            />
+          </>
         </div>
       </div>
     </>
