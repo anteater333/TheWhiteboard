@@ -186,7 +186,7 @@ export const Board = function () {
     } else if (isMemoPasted) {
       // 메모 위치 고정까지 완료됨
       // TBD : ★ 서버에 메모 저장 로직 ★
-      if (!confirm("제출하시겠습니까?")) return; 
+      if (!confirm("제출하시겠습니까?")) return;
       alert("posted!");
       setEditingMemo({
         memoType: 0,
@@ -195,7 +195,8 @@ export const Board = function () {
       });
       setIsBoardFixed(false);
       setIsPostingMode(false);
-      setIsMemoPasted(false); // 임시 동작 처리, 새로고침 해버려도 좋음
+      setIsMemoPasted(false);
+      // 이상 임시 동작 처리, 새로고침 해버려도 좋음
     } else {
       // 화면 고정 해제
       setIsBoardFixed(false);

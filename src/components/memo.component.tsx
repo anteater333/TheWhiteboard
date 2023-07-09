@@ -36,15 +36,17 @@ export const Memo = function ({
 
   /** 지정된 메모 타입에 따라 내용 부분 다르게 렌더링 */
   const MemoContent = useMemo(() => {
-    if (!memo.memoType) return TextMemo;
+    if (memo.memoType === undefined) return TextMemo;
 
     switch (memo.memoType) {
       case 0: // 일반 텍스트 메모
+        setHeightScale(1);
         return TextMemo;
       case 1: // 짧은 텍스트 메모
         setHeightScale(0.5);
         return TextShortMemo;
       default:
+        setHeightScale(1);
         return TextMemo;
     }
   }, [memo.memoType]);

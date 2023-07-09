@@ -1,6 +1,7 @@
 import { MemoType } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ChangeEvent,
   Dispatch,
   SetStateAction,
   useCallback,
@@ -12,7 +13,9 @@ type ModalProp = {
   /** Inject visibility state and its dispatcher to modal */
   visibilityState: [boolean, Dispatch<SetStateAction<boolean>>];
   /** Additional action on sumbit */
-  onSubmit?: () => void;
+  onConfirm?: () => void;
+  /** Additional action on cancel */
+  onCancel?: () => void;
 };
 
 type MemoEditModalProp = ModalProp & {
@@ -25,11 +28,12 @@ type MemoEditModalProp = ModalProp & {
 export const MemoEditModal = function ({
   visibilityState: [isVisible, setIsVisible],
   memoObjectState: [memoObject, setMemoObject],
-  onSubmit,
+  onCancel,
+  onConfirm,
 }: MemoEditModalProp) {
   /** 모달 내에서 변경점을 미리 담아둘 state들 */
   const [memoTextContent, setMemoTextContent] = useState("");
-  const [memoType, setMemoType] = useState(0);
+  const [memoType, setMemoType] = useState(memoObject.memoType ?? 0);
 
   /** memoType에 의해 변경되는 값들 */
   const [memoTextLimit, setMemoTextLimit] = useState(0);
@@ -38,12 +42,11 @@ export const MemoEditModal = function ({
 
   useEffect(() => {
     setMemoTextContent(memoObject.content || "");
-  }, [memoObject.content]);
+    setMemoType(memoObject.memoType || 0);
+  }, [memoObject.content, memoObject.memoType]);
 
   useEffect(() => {
-    setMemoType(memoObject.memoType || 0);
-
-    switch (memoObject.memoType) {
+    switch (memoType) {
       case 0:
         setMemoTextLimit(200);
         setMemoTextRows(6);
@@ -55,7 +58,7 @@ export const MemoEditModal = function ({
       default:
         break;
     }
-  }, [memoObject.memoType]);
+  }, [memoType]);
 
   useEffect(() => {
     setIsTextLengthOver(memoTextContent.length > memoTextLimit);
@@ -63,13 +66,58 @@ export const MemoEditModal = function ({
 
   /** 오버레이 부분 클릭 시 작성 중 메모 처리 */
   const handleOnOverlayClick = useCallback(() => {
-    if (memoTextContent === memoObject.content) {
+    if (
+      memoTextContent === memoObject.content &&
+      memoType === memoObject.memoType
+    ) {
       setIsVisible(false);
     } else if (confirm("작성한 메모가 지워집니다.")) {
       setMemoTextContent(memoObject.content ?? "");
+      setMemoType(memoObject.memoType ?? 0);
       setIsVisible(false);
     }
-  }, [memoObject.content, memoTextContent, setIsVisible]);
+  }, [
+    memoObject.content,
+    memoTextContent,
+    memoObject.memoType,
+    memoType,
+    setIsVisible,
+  ]);
+
+  /** 메모 형식 변경 시 동작 처리 */
+  const handleOnChangeMemoType = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const targetValue = +event.target.value;
+      setMemoType(targetValue);
+    },
+    []
+  );
+
+  /** 확인 버튼 동작 */
+  const handleOnConfirm = useCallback(() => {
+    setMemoObject({
+      memoType: memoType,
+      content: memoTextContent,
+    });
+
+    setIsVisible(false);
+
+    if (onConfirm) onConfirm();
+  }, [memoTextContent, memoType, onConfirm, setIsVisible, setMemoObject]);
+
+  /** 취소 버튼 동작 */
+  const handleOnCancel = useCallback(() => {
+    if (!confirm("취소하시겠습니까?")) return;
+
+    setMemoObject({
+      memoType: 0,
+      content: "",
+    });
+
+    setIsVisible(false);
+
+    if (onCancel) onCancel();
+  }, [setIsVisible, setMemoObject, onCancel]);
 
   return (
     <AnimatePresence>
@@ -124,7 +172,7 @@ export const MemoEditModal = function ({
               <div id="memo-text-counter-container">
                 <select
                   value={memoType}
-                  onChange={(event) => setMemoType(+event.target.value)}
+                  onChange={handleOnChangeMemoType}
                   className="pl-2 pr-2"
                 >
                   <option value={0}>텍스트 메모</option>
@@ -133,21 +181,13 @@ export const MemoEditModal = function ({
               </div>
               <div
                 id="memo-submit-container"
-                className="flex flex-1 justify-end font-bold"
+                className="flex flex-1 justify-end gap-4 font-bold"
               >
+                <button onClick={handleOnCancel}>Cancel</button>
                 <button
                   className="rounded-md border-2 border-black px-2 transition-all enabled:hover:bg-black enabled:hover:text-white disabled:opacity-50"
                   disabled={isTextLengthOver || memoTextContent.length === 0}
-                  onClick={() => {
-                    setIsVisible(false);
-
-                    setMemoObject({
-                      memoType: memoType,
-                      content: memoTextContent,
-                    });
-
-                    if (onSubmit) onSubmit();
-                  }}
+                  onClick={handleOnConfirm}
                 >
                   MEMO
                 </button>
