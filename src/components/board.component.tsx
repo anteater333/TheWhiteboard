@@ -210,50 +210,20 @@ export const Board = function () {
     return (
       <>
         <>
-          {/* 세로줄 메인 */}
-          {Array(9)
-            .fill(0)
-            .map((_, idx) => {
-              return (
-                <div
-                  key={`grid-vertical-main-${idx}`}
-                  className="absolute border-r-2 border-dashed border-stone-200"
-                  style={{
-                    left: `${memoWidth * idx}px`,
-                    width: `${memoWidth}px`,
-                    height: `${boardHeight}px`,
-                  }}
-                />
-              );
-            })}
           {/* 세로줄 서브 */}
           {Array(10 * 4)
             .fill(0)
             .map((_, idx) => {
               return (
                 <div
-                  key={`grid-vertical-sub-${idx}`}
-                  className="absolute border-r-2 border-dotted border-stone-200"
+                  key={`grid-vertical-${idx}`}
+                  className="absolute border-stone-300"
                   style={{
                     left: `${(memoWidth / 4) * idx}px`,
                     width: `${memoWidth / 4}px`,
                     height: `${boardHeight}px`,
-                  }}
-                />
-              );
-            })}
-          {/* 가로줄 메인 */}
-          {Array(7)
-            .fill(0)
-            .map((_, idx) => {
-              return (
-                <div
-                  key={`grid-horizontal-main-${idx}`}
-                  className="absolute border-b-2 border-dashed border-stone-200"
-                  style={{
-                    top: `${memoHeight * idx}px`,
-                    width: `${boardWidth}px`,
-                    height: `${memoHeight}px`,
+                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
+                    borderRightWidth: idx % 4 === 3 ? `2px` : `1px`,
                   }}
                 />
               );
@@ -264,12 +234,14 @@ export const Board = function () {
             .map((_, idx) => {
               return (
                 <div
-                  key={`grid-horizontal-sub-${idx}`}
-                  className="absolute border-b-2 border-dotted border-stone-200"
+                  key={`grid-horizontal-${idx}`}
+                  className="absolute border-stone-300"
                   style={{
                     top: `${(memoHeight / 4) * idx}px`,
                     width: `${boardWidth}px`,
                     height: `${memoHeight / 4}px`,
+                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
+                    borderBottomWidth: idx % 4 === 3 ? `2px` : `1px`,
                   }}
                 />
               );
@@ -370,7 +342,7 @@ export const Board = function () {
         }}
       >
         <div
-          className="relative overflow-hidden rounded-lg border-2 border-stone-200 bg-stone-100"
+          className="relative overflow-hidden rounded-lg border-2 border-stone-300 bg-stone-100"
           style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
         >
           {BoardGrid}
