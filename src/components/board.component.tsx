@@ -54,11 +54,7 @@ export const Board = function () {
   const [showEditModal, setShowEditModal] = useState(false);
 
   // #region For posting mode
-  const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({
-    memoType: 0,
-    createdAt: Date().toString(),
-    user: { nickname: "TesterEditor" },
-  });
+  const [editingMemo, setEditingMemo] = useState<Partial<MemoType>>({});
   const [editingMemoPosX, setEditingMemoPosX] = useState(0);
   const [editingMemoPosY, setEditingMemoPosY] = useState(0);
   const [isPostingMode, setIsPostingMode] = useState(false);
@@ -178,6 +174,23 @@ export const Board = function () {
     [scale, isPostingMode, isMemoPasted]
   );
 
+  /** Posting Mode 종료 */
+  const quitPostingMode = useCallback(() => {
+    setEditingMemo({});
+    setIsBoardFixed(false);
+    setIsPostingMode(false);
+    setIsMemoPasted(false);
+  }, []);
+
+  /** + 버튼을 눌렀을 때의 행동 */
+  const handleOnAddButton = useCallback(() => {
+    if (!isPostingMode) setShowAddList(!showAddList);
+    else if (confirm("작성 중인 메모가 지워집니다.")) {
+      quitPostingMode();
+    }
+  }, [isPostingMode, quitPostingMode, showAddList]);
+
+  /** Posting Mode에서 화면 하단 중앙의 확인 버튼의 행동 */
   const handleOnConfirmButton = useCallback(() => {
     if (!isBoardFixed) {
       // 화면 고정
@@ -188,20 +201,13 @@ export const Board = function () {
       // TBD : ★ 서버에 메모 저장 로직 ★
       if (!confirm("제출하시겠습니까?")) return;
       alert("posted!");
-      setEditingMemo({
-        memoType: 0,
-        createdAt: Date().toString(),
-        user: { nickname: "TesterEditor" },
-      });
-      setIsBoardFixed(false);
-      setIsPostingMode(false);
-      setIsMemoPasted(false);
+      quitPostingMode();
       // 이상 임시 동작 처리, 새로고침 해버려도 좋음
     } else {
       // 화면 고정 해제
       setIsBoardFixed(false);
     }
-  }, [isBoardFixed, isMemoPasted]);
+  }, [isBoardFixed, isMemoPasted, quitPostingMode]);
   // #endregion
 
   // #region Board 이동&확대 관련
@@ -395,25 +401,16 @@ export const Board = function () {
           {showAddList ? (
             <AddMemoList
               onSelected={(selected) => {
-                if (
-                  !editingMemo.content ||
-                  (editingMemo.content !== "" &&
-                    confirm("작성 중인 메모가 지워집니다."))
-                ) {
-                  // 새 메모 작성에 돌입.
-                  setEditingMemo({ memoType: selected });
-                  setShowEditModal(true);
-                }
-
+                // 새 메모 작성에 돌입.
+                setEditingMemo({ memoType: selected });
+                setShowEditModal(true);
                 setShowAddList(false);
               }}
             />
           ) : undefined}
           <AddButton
-            isActive={showAddList}
-            onClick={() => {
-              setShowAddList(!showAddList);
-            }}
+            isActive={showAddList || isPostingMode}
+            onClick={handleOnAddButton}
           />
         </div>
         <div className="absolute bottom-6 left-4 z-40 w-fit">

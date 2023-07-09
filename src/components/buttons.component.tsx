@@ -17,7 +17,7 @@ export const AddButton = function ({ isActive, ...props }: ButtonType) {
       <motion.div
         className="h-16 w-16 text-center leading-[3.4rem]"
         animate={{
-          rotate: isActive ? 180 : 0,
+          rotate: isActive ? 135 : 0,
         }}
       >
         +
