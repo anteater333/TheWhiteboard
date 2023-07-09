@@ -15,10 +15,22 @@ const memoMargin = 8;
 
 type MemoProp = {
   memo: Partial<MemoType>;
+  // 이하 포스팅 모드 관련
   isPostingMode?: boolean;
+  isBoardFixed?: boolean;
+  isPosInvalid?: boolean;
+  isMemoPasted?: boolean;
+  onPasted?: () => void;
 };
 
-export const Memo = function ({ memo, isPostingMode }: MemoProp) {
+export const Memo = function ({
+  memo,
+  isPostingMode,
+  isBoardFixed,
+  isPosInvalid,
+  isMemoPasted,
+  onPasted,
+}: MemoProp) {
   /** 메모 컴포넌트 높이 배율 */
   const [heightScale, setHeightScale] = useState(1);
 
@@ -40,20 +52,37 @@ export const Memo = function ({ memo, isPostingMode }: MemoProp) {
   return (
     <div
       id="memo-container"
-      className="absolute flex select-none flex-col rounded-sm border-gray-200 bg-slate-50 px-1 py-1 shadow-sm"
+      className={`absolute flex select-none flex-col rounded-md border-gray-200 bg-slate-50 px-1 py-1 ${
+        isPostingMode && !isMemoPasted ? `shadow-2xl` : `shadow-md`
+      }`}
       style={{
         top: memo.positionY,
         left: memo.positionX,
         margin: `${memoMargin}px`,
         width: `${memoWidth - memoMargin * 2}px`,
         height: `${memoHeight * heightScale - memoMargin * 2}px`,
-        border: isPostingMode ? `2px dashed black` : ``,
+        border: isPostingMode
+          ? `2px ${isBoardFixed ? `solid` : `dashed`} ${
+              isPosInvalid ? `red` : `black`
+            }`
+          : `none`,
         zIndex: isPostingMode ? `30` : `auto`,
       }}
       onMouseDown={(event) => {
         if (!isPostingMode) event.stopPropagation();
+        else if (isPostingMode && !isPosInvalid && isBoardFixed && !!onPasted)
+          onPasted();
       }}
     >
+      {isPostingMode ? (
+        <div
+          id="memo-overlay-on-posting-mode"
+          className="absolute h-full w-full"
+          style={{
+            cursor: isBoardFixed ? `pointer` : `grab`,
+          }}
+        />
+      ) : undefined}
       <div
         id="memo-header"
         className="flex h-4 flex-row-reverse border-b-[1px] text-xs"
@@ -63,7 +92,10 @@ export const Memo = function ({ memo, isPostingMode }: MemoProp) {
           {memo.user?.nickname}
         </div>
       </div>
-      <div id="memo-body" className="min-h-0 flex-grow overflow-hidden py-1">
+      <div
+        id="memo-body"
+        className="min-h-0 flex-grow cursor-pointer overflow-hidden py-1"
+      >
         <MemoContent memo={memo} />
       </div>
       <div
@@ -118,7 +150,7 @@ export const TextMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-default" className="flex h-[6.75rem] w-full">
-        <label className="line-clamp-[9] whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-[9] cursor-pointer whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>
@@ -130,7 +162,7 @@ export const TextShortMemo = function ({ memo }: Partial<MemoProp>) {
   return (
     <>
       <div id="memo-content-text-small" className="flex h-6 w-full">
-        <label className="line-clamp-2 whitespace-pre-wrap text-2xs">
+        <label className="line-clamp-2 cursor-pointer whitespace-pre-wrap text-2xs">
           {memo?.content}
         </label>
       </div>

@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * The Whiteboard Core Component
+ */
+
 import {
   KeyboardEvent,
   MouseEvent,
@@ -10,12 +14,15 @@ import {
   useState,
   WheelEvent,
 } from "react";
-import { AddButton, OnGoingMemoButton } from "./buttons.component";
+import {
+  AddButton,
+  OnGoingMemoButton,
+  PositionConfirmButton,
+} from "./buttons.component";
 import { Memo, memoHeight, memoWidth } from "./memo.component";
 import { motion } from "framer-motion";
 import { MemoEditModal } from "./modal.component";
 import { MemoType } from "@/types/types";
-import { set } from "date-fns";
 
 const boardWidth = memoWidth * 10;
 const boardHeight = memoHeight * 7.5;
@@ -55,6 +62,10 @@ export const Board = function () {
   const [editingMemoPosX, setEditingMemoPosX] = useState(0);
   const [editingMemoPosY, setEditingMemoPosY] = useState(0);
   const [isPostingMode, setIsPostingMode] = useState(false);
+  /** Posting Mode에서 화면 고정 여부 */
+  const [isBoardFixed, setIsBoardFixed] = useState(false);
+  /** 화면 고정 이후 메모 위치 선택 여부 */
+  const [isMemoPasted, setIsMemoPasted] = useState(false);
 
   /** Posting mode에서 사용하는 자리잡기 용도 메모 컴포넌트 */
   const EditingMemoComponent = useMemo(() => {
@@ -70,9 +81,25 @@ export const Board = function () {
           ...editingMemo,
         }}
         isPostingMode={true}
+        isBoardFixed={isBoardFixed}
+        isMemoPasted={isMemoPasted}
+        onPasted={() => {
+          if (isMemoPasted) {
+            setIsMemoPasted(false);
+            return;
+          }
+          setIsMemoPasted(true);
+        }}
       />
     );
-  }, [editingMemo, isPostingMode, editingMemoPosX, editingMemoPosY]);
+  }, [
+    editingMemo,
+    isPostingMode,
+    isBoardFixed,
+    editingMemoPosX,
+    editingMemoPosY,
+    isMemoPasted,
+  ]);
 
   /** 메모 입력 확인 시 Posting mode 진입 */
   useEffect(() => {
@@ -86,7 +113,7 @@ export const Board = function () {
     return (
       <>
         <>
-          {/* 세로줄 서브 */}
+          {/* 세로줄 */}
           {Array(10 * 4)
             .fill(0)
             .map((_, idx) => {
@@ -104,7 +131,7 @@ export const Board = function () {
                 />
               );
             })}
-          {/* 가로줄 서브 */}
+          {/* 가로줄 */}
           {Array(7.25 * 4)
             .fill(0)
             .map((_, idx) => {
@@ -127,9 +154,9 @@ export const Board = function () {
     );
   }, [isPostingMode]);
 
-  const calcPostingModePosition = useCallback(
+  const handlePositionOnPostingMode = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-      if (!isPostingMode) {
+      if (!isPostingMode || isMemoPasted) {
         return;
       }
 
@@ -148,8 +175,32 @@ export const Board = function () {
       setEditingMemoPosX(posX);
       setEditingMemoPosY(posY);
     },
-    [scale, isPostingMode]
+    [scale, isPostingMode, isMemoPasted]
   );
+
+  const handleOnConfirmButton = useCallback(() => {
+    if (!isBoardFixed) {
+      // 화면 고정
+      setIsDragging(false);
+      setIsBoardFixed(true);
+    } else if (isMemoPasted) {
+      // 메모 위치 고정까지 완료됨
+      // TBD : ★ 서버에 메모 저장 로직 ★
+      if (!confirm("제출하시겠습니까?")) return; 
+      alert("posted!");
+      setEditingMemo({
+        memoType: 0,
+        createdAt: Date().toString(),
+        user: { nickname: "TesterEditor" },
+      });
+      setIsBoardFixed(false);
+      setIsPostingMode(false);
+      setIsMemoPasted(false); // 임시 동작 처리, 새로고침 해버려도 좋음
+    } else {
+      // 화면 고정 해제
+      setIsBoardFixed(false);
+    }
+  }, [isBoardFixed, isMemoPasted]);
   // #endregion
 
   // #region Board 이동&확대 관련
@@ -163,6 +214,7 @@ export const Board = function () {
     boardRef.current?.classList.add("transition-transform");
     setScale(newScale * minScale);
     setScaleLevel(newScale);
+    boardRef.current?.focus();
   }, [scaleLevel, isPostingMode]);
 
   /** 1단계 축소 */
@@ -175,6 +227,7 @@ export const Board = function () {
     boardRef.current?.classList.add("transition-transform");
     setScale(newScale * minScale);
     setScaleLevel(newScale);
+    boardRef.current?.focus();
   }, [scaleLevel, isPostingMode]);
 
   /** Board 이동/확대 초기화 */
@@ -184,6 +237,7 @@ export const Board = function () {
     setPosX(0);
     setPosY(0);
     setIsDragging(false);
+    boardRef.current?.focus();
   }, []);
 
   /** Posting mode 진입 시 화면 확대 초기화 및 고정 */
@@ -213,7 +267,7 @@ export const Board = function () {
         return;
       }
 
-      switch (event.key) {
+      switch (event.code) {
         case "ArrowLeft":
           setPosX((prev) => prev + 96 / scale);
           break;
@@ -226,20 +280,26 @@ export const Board = function () {
         case "ArrowDown":
           setPosY((prev) => prev - 96 / scale);
           break;
+        case "Space":
+          if (!isPostingMode) return;
+          handleOnConfirmButton();
+          break;
       }
     },
-    [scale]
+    [scale, isPostingMode, handleOnConfirmButton]
   );
 
   const handleBoardOnMouseDown = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+      if (isBoardFixed) return;
+
       boardRef.current?.classList.remove("transition-transform");
 
       setStartMouseX(event.clientX);
       setStartMouseY(event.clientY);
       setIsDragging(true);
     },
-    []
+    [isBoardFixed]
   );
 
   const handleBoardOnMouseUp = useCallback(() => {
@@ -330,7 +390,7 @@ export const Board = function () {
 
       {/* 메모 추가 관련 버튼 */}
       <>
-        <div className="absolute bottom-6 right-4 z-30 flex w-fit flex-col items-end">
+        <div className="absolute bottom-6 right-4 z-40 flex w-fit flex-col items-end">
           {showAddList ? (
             <AddMemoList
               onSelected={(selected) => {
@@ -355,7 +415,7 @@ export const Board = function () {
             }}
           />
         </div>
-        <div className="absolute bottom-6 left-4 z-30 w-fit">
+        <div className="absolute bottom-6 left-4 z-40 w-fit">
           {editingMemo.content ? (
             <OnGoingMemoButton
               onClick={() => {
@@ -365,19 +425,36 @@ export const Board = function () {
             />
           ) : undefined}
         </div>
+
+        {isPostingMode ? (
+          <div className="absolute bottom-6 left-0 right-0 z-30 mx-auto w-44">
+            <PositionConfirmButton
+              texts={{
+                keyText: "space",
+                state1Text: "화면 고정",
+                state2Text:
+                  isBoardFixed && isMemoPasted ? "Post-it!" : "고정 취소",
+              }}
+              isActive={!isBoardFixed}
+              onClick={handleOnConfirmButton}
+            />
+          </div>
+        ) : undefined}
       </>
 
-      <div
-        id="board-controller-container"
-        className="absolute right-4 top-2 z-40 flex flex-col text-center font-galmuri text-2xl font-bold"
-      >
-        <button onClick={() => scaleUp()}>+</button>
-        <label className="pb-1 pt-2 text-base">{scaleLevel}</label>
-        <button onClick={() => scaleDown()}>-</button>
-        <button className="mt-1" onClick={resetBoard}>
-          ↻
-        </button>
-      </div>
+      {isBoardFixed ? undefined : (
+        <div
+          id="board-controller-container"
+          className="absolute right-4 top-2 z-40 flex flex-col text-center font-galmuri text-2xl font-bold"
+        >
+          <button onClick={() => scaleUp()}>+</button>
+          <label className="pb-1 pt-2 text-base">{scaleLevel}</label>
+          <button onClick={() => scaleDown()}>-</button>
+          <button className="mt-1" onClick={resetBoard}>
+            ↻
+          </button>
+        </div>
+      )}
       <div
         id="board"
         tabIndex={1}
@@ -396,7 +473,7 @@ export const Board = function () {
       >
         <div
           className="relative overflow-hidden rounded-lg border-2 border-stone-300 bg-stone-100"
-          onMouseMove={calcPostingModePosition}
+          onMouseMove={handlePositionOnPostingMode}
           style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
         >
           <>
