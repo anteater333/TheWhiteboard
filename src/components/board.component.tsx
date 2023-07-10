@@ -46,7 +46,7 @@ const testDataMemoList = [
     title: "Title, Deprecated.",
     content:
       "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-    createdAt: Date().toString(),
+    createdAt: new Date(),
     votes: [],
     referencedMemo: [],
     positionX: 0,
@@ -60,7 +60,7 @@ const testDataMemoList = [
     title: "Title, Deprecated.",
     content:
       "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-    createdAt: Date().toString(),
+    createdAt: new Date(),
     votes: [],
     referencedMemo: [],
     positionX: memoWidth,
@@ -74,7 +74,7 @@ const testDataMemoList = [
     title: "Title, Deprecated.",
     content:
       "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-    createdAt: Date().toString(),
+    createdAt: new Date(),
     votes: [],
     referencedMemo: [],
     positionX: memoWidth,
@@ -88,7 +88,7 @@ const testDataMemoList = [
     title: "Title, Deprecated.",
     content:
       "test\n신新 제논의 역설\n\n일을 끝마칠 때가sfsafasfasfsaf 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n일을 끝afsafajdsfjlkdsajflksaㄻㅇ니ㅏㄹ멍ㄴ리ㅏㅁㅇ너ㅣㅏㄻ너리ㅏㅁ너리ㅏㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏ렁ㄴ미ㅏ런미ㅏ렁ㄴ미ㅏㄹ마칠 때가 가까워 올 수록 진행속\n도가 느려지는 adsfasfa 현상afdf",
-    createdAt: Date().toString(),
+    createdAt: new Date(),
     votes: [],
     referencedMemo: [],
     positionX: 0,
@@ -101,7 +101,7 @@ const testDataMemoList = [
     memoType: 1,
     content:
       "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-    createdAt: Date().toString(),
+    createdAt: new Date(),
     votes: [],
     referencedMemo: [],
     positionX: 400,
@@ -114,7 +114,7 @@ const testDataMemoList = [
     memoType: 1,
     content:
       "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-    createdAt: Date().toString(),
+    createdAt: new Date(),
     votes: [],
     referencedMemo: [],
     positionX: 200,
