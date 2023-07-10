@@ -20,6 +20,7 @@ type MemoProp = {
   isBoardFixed?: boolean;
   isPosInvalid?: boolean;
   isMemoPasted?: boolean;
+  isDragging?: boolean;
   onPasted?: () => void;
 };
 
@@ -29,6 +30,7 @@ export const Memo = function ({
   isBoardFixed,
   isPosInvalid,
   isMemoPasted,
+  isDragging,
   onPasted,
 }: MemoProp) {
   /** 메모 컴포넌트 높이 배율 */
@@ -54,7 +56,7 @@ export const Memo = function ({
   return (
     <div
       id="memo-container"
-      className={`absolute flex select-none flex-col rounded-md border-gray-200 bg-slate-50 px-1 py-1 ${
+      className={`absolute flex select-none flex-col rounded-md border-gray-200 bg-slate-50 px-1 py-1 transition-opacity ${
         isPostingMode && !isMemoPasted ? `shadow-2xl` : `shadow-md`
       }`}
       style={{
@@ -69,6 +71,12 @@ export const Memo = function ({
             }`
           : `none`,
         zIndex: isPostingMode ? `30` : `auto`,
+        opacity:
+          isPostingMode && isDragging
+            ? `0`
+            : isPostingMode && !isBoardFixed
+            ? `.5`
+            : `1`,
       }}
       onMouseDown={(event) => {
         if (!isPostingMode) event.stopPropagation();

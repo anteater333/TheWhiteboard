@@ -171,6 +171,7 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
         isPosInvalid={isPosInvalid}
         isBoardFixed={isBoardFixed}
         isMemoPasted={isMemoPasted}
+        isDragging={isDragging}
         onPasted={() => {
           if (isMemoPasted) {
             setIsMemoPasted(false);
@@ -188,6 +189,7 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
     editingMemoPosY,
     isMemoPasted,
     isPosInvalid,
+    isDragging,
   ]);
 
   /** 메모 입력 확인 시 Posting mode 진입 */
@@ -605,7 +607,7 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
         }}
       >
         <div
-          className="relative overflow-hidden rounded-lg border-2 border-stone-300 bg-stone-100"
+          className="relative cursor-grab overflow-hidden rounded-lg border-2 border-stone-300 bg-stone-100"
           onMouseMove={handlePositionOnPostingMode}
           style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
         >
