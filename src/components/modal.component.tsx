@@ -109,15 +109,10 @@ export const MemoEditModal = function ({
   const handleOnCancel = useCallback(() => {
     if (!confirm("취소하시겠습니까?")) return;
 
-    setMemoObject({
-      memoType: 0,
-      content: "",
-    });
-
     setIsVisible(false);
 
     if (onCancel) onCancel();
-  }, [setIsVisible, setMemoObject, onCancel]);
+  }, [setIsVisible, onCancel]);
 
   return (
     <AnimatePresence>
