@@ -11,15 +11,16 @@ export const resolvers = {
   Mutation: {
     userCreate: async (
       parent: unknown,
-      args: { input: { nickname: string } }
+      args: { input: { nickname: string; email: string } }
     ) => {
       const now = new Date();
 
       return {
         user: await dbClient.user.create({
           data: {
-            oauthProvider: "Google",
+            provider: "Google",
             nickname: args.input.nickname,
+            email: args.input.email,
             createdAt: now,
             updatedAt: now,
           },

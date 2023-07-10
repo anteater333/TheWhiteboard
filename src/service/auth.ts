@@ -124,6 +124,9 @@ export const authOptions: NextAuthOptions = {
       session.user.nickname = token.nickname;
       return session;
     },
+    redirect({ baseUrl }) {
+      return baseUrl;
+    },
   },
 };
 
