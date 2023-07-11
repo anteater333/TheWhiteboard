@@ -67,6 +67,7 @@ export const authOptions: NextAuthOptions = {
 
       if (signedUser) {
         token.nickname = signedUser.nickname;
+        token.id = signedUser.id;
       }
 
       // Refresh Token Rotation
@@ -105,7 +106,7 @@ export const authOptions: NextAuthOptions = {
             ...token, // Keep the previous token properties
             access_token: tokens.access_token,
             expires_at: Math.floor(
-              Date.now() / 1000 + (tokens.expires_in || 0)
+              Date.now() / 1000 + (tokens.expires_in || 0),
             ),
             // Fall back to old refresh token, but note that
             // many providers may only allow using a refresh token once.
@@ -122,6 +123,7 @@ export const authOptions: NextAuthOptions = {
     async session({ newSession, session, token, trigger, user }) {
       session.error = token.error;
       session.user.nickname = token.nickname;
+      session.user.id = token.id;
       return session;
     },
     redirect({ baseUrl }) {
@@ -137,6 +139,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       nickname?: string | null;
+      id?: number | null;
     };
     error?: "RefreshAccessTokenError";
     access_token?: string;
@@ -148,6 +151,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     nickname?: string;
+    id?: number;
     access_token?: string;
     expires_at?: number;
     refresh_token?: string;

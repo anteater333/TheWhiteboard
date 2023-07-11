@@ -6,7 +6,7 @@ const memoResolvers = {
   Query: {
     memo: async (
       parent: unknown,
-      args: { boardName: string; pageNum: number }
+      args: { boardName: string; pageNum: number },
     ) => {
       const board = await db.board.findFirst({
         where: { name: args.boardName },
@@ -72,7 +72,7 @@ const memoResolvers = {
           positionX: number;
           positionY: number;
         };
-      }
+      },
     ) => {
       const user = await db.user.findFirst({
         where: { id: +args.input.userId },
@@ -144,7 +144,7 @@ export const resolvers = {
   Mutation: {
     userCreate: async (
       parent: unknown,
-      args: { input: { nickname: string; email: string } }
+      args: { input: { nickname: string; email: string } },
     ) => {
       const now = new Date();
 

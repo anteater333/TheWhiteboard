@@ -81,7 +81,7 @@ export default async function BoardPage({
         </div>
         <div className="flex flex-1 justify-center overflow-visible">
           <span className="ml-auto whitespace-nowrap text-right text-xl hover:underline">
-            {session?.user.nickname}
+            {`${session?.user.nickname}(${session?.user.id})`}
           </span>
         </div>
       </div>

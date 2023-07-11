@@ -23,6 +23,9 @@ import { Memo, memoHeight, memoWidth } from "./memo.component";
 import { motion } from "framer-motion";
 import { MemoEditModal } from "./modal.component";
 import { MemoType } from "@/types/types";
+import { gql, useMutation } from "@apollo/client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const boardWidth = memoWidth * 10;
 const boardHeight = memoHeight * 7.5;
@@ -34,101 +37,28 @@ const maxScale = 8;
 const minScale = maxScale / numOfLevels;
 
 type BoardProp = {
-  memoList?: Partial<MemoType>[];
+  memoList: Partial<MemoType>[];
 };
 
-const testDataMemoList: Partial<MemoType>[] = [
-  {
-    user: {
-      nickname: "Tester",
-    },
-    memoType: 0,
-    title: "Title, Deprecated.",
-    content:
-      "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-    createdAt: Date(),
-    votes: [],
-    referencedMemo: [],
-    positionX: 0,
-    positionY: 0,
-  },
-  {
-    user: {
-      nickname: "Tester",
-    },
-    memoType: 0,
-    title: "Title, Deprecated.",
-    content:
-      "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-    createdAt: Date(),
-    votes: [],
-    referencedMemo: [],
-    positionX: memoWidth,
-    positionY: memoHeight,
-  },
-  {
-    user: {
-      nickname: "Tester",
-    },
-    memoType: 0,
-    title: "Title, Deprecated.",
-    content:
-      "신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상",
-    createdAt: Date(),
-    votes: [],
-    referencedMemo: [],
-    positionX: memoWidth,
-    positionY: 0,
-  },
-  {
-    user: {
-      nickname: "Tester",
-    },
-    memoType: 0,
-    title: "Title, Deprecated.",
-    content:
-      "test\n신新 제논의 역설\n\n일을 끝마칠 때가sfsafasfasfsaf 가까워 올 수록 진행속도가 느려지는 현상\n\n신新 제논의 역설\n일을 끝afsafajdsfjlkdsajflksaㄻㅇ니ㅏㄹ멍ㄴ리ㅏㅁㅇ너ㅣㅏㄻ너리ㅏㅁ너리ㅏㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏㄹㅇㄴ머ㅣㅏ렁ㄴ미ㅏ런미ㅏ렁ㄴ미ㅏㄹ마칠 때가 가까워 올 수록 진행속\n도가 느려지는 adsfasfa 현상afdf",
-    createdAt: Date(),
-    votes: [],
-    referencedMemo: [],
-    positionX: 0,
-    positionY: memoHeight,
-  },
-  {
-    user: {
-      nickname: "Tester",
-    },
-    memoType: 1,
-    content:
-      "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-    createdAt: Date(),
-    votes: [],
-    referencedMemo: [],
-    positionX: 400,
-    positionY: memoHeight * 2.5,
-  },
-  {
-    user: {
-      nickname: "Tester",
-    },
-    memoType: 1,
-    content:
-      "신新 제논의 역설\n일을 끝마칠 때가 가까워 올 수록 진행속도가 느려지는 현상 가나다라 마바사 아자차카타파하 아야어여오요우유\ntest",
-    createdAt: Date(),
-    votes: [],
-    referencedMemo: [],
-    positionX: 200,
-    positionY: memoHeight * 2.5,
-  },
-];
+const NEW_MEMO = gql`
+  mutation NewMemo($input: MemoCreateInput) {
+    memoCreate (input: $input) {
+      memo {
+        id
+      }
+    }
+  }
+`;
 
 /**
  * The Whiteboard. Memo들의 집합.
  * 확대 이동 등의 기능 제공.
  * @returns
  */
-export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
+export const Board = function ({ memoList }: BoardProp) {
   const boardRef = useRef<HTMLDivElement | null>(null);
+  const session = useSession();
+  const router = useRouter();
 
   const [scaleLevel, setScaleLevel] = useState(1);
   const [scale, setScale] = useState(scaleLevel * minScale);
@@ -153,6 +83,21 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
   const [isMemoPasted, setIsMemoPasted] = useState(false);
   /** 메모가 유효하지 않은 위치에 존재하는지 */
   const [isPosInvalid, setIsPosInvalid] = useState(false);
+
+  /** 새 메모 생성 API 호출 */
+  const [postNewMemo, { error, loading }] = useMutation(NEW_MEMO, {
+    variables: {
+      input: {
+        boardName: "world",
+        pageNum: 1,
+        content: editingMemo.content,
+        memoType: editingMemo.memoType,
+        positionX: editingMemoPosX,
+        positionY: editingMemoPosY,
+        userId: session.data?.user.id,
+      },
+    },
+  });
 
   /** Posting mode에서 사용하는 자리잡기 용도 메모 컴포넌트 */
   const EditingMemoComponent = useMemo(() => {
@@ -243,6 +188,8 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
   const BoardGrid = useMemo(() => {
     if (!isPostingMode) return;
 
+    router.refresh();
+
     return (
       <>
         <>
@@ -285,7 +232,7 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
         </>
       </>
     );
-  }, [isPostingMode]);
+  }, [isPostingMode, router]);
 
   const handlePositionOnPostingMode = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
@@ -328,23 +275,45 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
   }, [isPostingMode, quitPostingMode, showAddList]);
 
   /** Posting Mode에서 화면 하단 중앙의 확인 버튼의 행동 */
-  const handleOnConfirmButton = useCallback(() => {
+  const handleOnConfirmButton = useCallback(async () => {
+    if (loading) return; // do nothing
+
+    router.refresh();
+
     if (!isBoardFixed) {
       // 화면 고정
       setIsDragging(false);
       setIsBoardFixed(true);
     } else if (isMemoPasted) {
       // 메모 위치 고정까지 완료됨
-      // TBD : ★ 서버에 메모 저장 로직 ★
+      // 서버에 메모 저장 로직
       if (!confirm("제출하시겠습니까?")) return;
-      alert("posted!");
+      await postNewMemo();
+
+      if (error) {
+        alert("메모 생성 중 에러 발생");
+        console.error(error);
+      }
+
+      alert(`posted!`);
+
+      // 새로고침
+      router.refresh();
+
       quitPostingMode();
-      // 이상 임시 동작 처리, 새로고침 해버려도 좋음
     } else {
       // 화면 고정 해제
       setIsBoardFixed(false);
     }
-  }, [isBoardFixed, isMemoPasted, quitPostingMode]);
+  }, [
+    error,
+    isBoardFixed,
+    isMemoPasted,
+    loading,
+    postNewMemo,
+    quitPostingMode,
+    router,
+  ]);
   // #endregion
 
   // #region Board 이동&확대 관련
@@ -565,10 +534,13 @@ export const Board = function ({ memoList = testDataMemoList }: BoardProp) {
           <div className="absolute bottom-6 left-0 right-0 z-30 mx-auto w-44">
             <PositionConfirmButton
               texts={{
-                keyText: "space",
+                keyText: loading ? "" : "space",
                 state1Text: "화면 고정",
-                state2Text:
-                  isBoardFixed && isMemoPasted ? "Post-it!" : "고정 취소",
+                state2Text: loading
+                  ? "Loading..."
+                  : isBoardFixed && isMemoPasted
+                  ? "Post-it!"
+                  : "고정 취소",
               }}
               isActive={!isBoardFixed}
               onClick={handleOnConfirmButton}

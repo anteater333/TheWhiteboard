@@ -124,7 +124,7 @@ export const Memo = function ({
               △
             </button>
             <label id="memo-votes" className="mr-1 block w-3 text-center">
-              {memo.votes?.length}
+              {memo.point}
             </label>
             <button id="memo-downvote" className="mr-2">
               ▽
@@ -134,7 +134,7 @@ export const Memo = function ({
             <button id="memo-reply" className="mr-1">
               □
             </button>
-            <label id="memo-replies">{memo.referencedMemo?.length}</label>
+            <label id="memo-replies">{memo.referencedMemo?.length || 0}</label>
           </div>
           <div
             id="memo-share-container"

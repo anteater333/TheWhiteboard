@@ -56,7 +56,7 @@ export const PositionConfirmButton = function ({
       >
         {isActive ? texts.state1Text : texts.state2Text}
         <br />
-        <div className="-mt-2 text-base">{texts.keyText}</div>
+        <div className="-mt-1 h-4 text-base">{texts.keyText}</div>
       </motion.div>
     </button>
   );
