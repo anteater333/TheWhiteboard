@@ -1,16 +1,13 @@
+"use client";
+
 import { MemoType } from "@/types/types";
 import { formatDate } from "@/utils/formatter";
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { memoWidth, memoHeight } from "@/constants/size";
 
 import shareBtn from "../../public/svg/share.svg";
 
-/**
- * 메모 너비 200px
- * 메모 높이 180px
- */
-export const memoWidth = 200;
-export const memoHeight = 180;
 const memoMargin = 8;
 
 type MemoProp = {

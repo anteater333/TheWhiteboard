@@ -1,5 +1,5 @@
 import db from "@/service/database";
-import { error } from "console";
+import { validateMemoPosition } from "@/utils/validator";
 import { GraphQLError } from "graphql";
 
 const memoResolvers = {
@@ -96,6 +96,41 @@ const memoResolvers = {
         throw new GraphQLError("board name not found", {
           extensions: {
             code: "BOARD_NOT_FOUND",
+          },
+        });
+      }
+
+      if (args.input.pageNum <= 0 || args.input.pageNum > board.pageCount) {
+        throw new GraphQLError("inavlid page number", {
+          extensions: {
+            code: "INVALID_PAGE_NUMBER",
+          },
+        });
+      }
+
+      const memoList = await db.memo.findMany({
+        where: {
+          boardId: board.id,
+          pageNum: args.input.pageNum,
+        },
+        select: {
+          memoType: true,
+          positionX: true,
+          positionY: true,
+        },
+      });
+
+      if (
+        !validateMemoPosition(
+          args.input.memoType,
+          args.input.positionX,
+          args.input.positionY,
+          memoList,
+        )
+      ) {
+        throw new GraphQLError("invalid memo position", {
+          extensions: {
+            code: "INVALID_MEMO_POSITION",
           },
         });
       }

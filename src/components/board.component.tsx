@@ -19,16 +19,21 @@ import {
   OnGoingMemoButton,
   PositionConfirmButton,
 } from "./buttons.component";
-import { Memo, memoHeight, memoWidth } from "./memo.component";
+import { Memo } from "./memo.component";
 import { motion } from "framer-motion";
 import { MemoEditModal } from "./modal.component";
 import { MemoType } from "@/types/types";
 import { gql, useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-const boardWidth = memoWidth * 10;
-const boardHeight = memoHeight * 7.5;
+import { validateMemoPosition } from "@/utils/validator";
+import {
+  boardWidth,
+  boardHeight,
+  memoHeight,
+  memoWidth,
+} from "@/constants/size";
+import { GraphQLError } from "graphql";
 
 const borderPadding = 32;
 
@@ -144,51 +149,19 @@ export const Board = function ({ memoList }: BoardProp) {
 
   /** 메모 위치 유효 여부 계산 */
   useEffect(() => {
-    const widthByType = memoWidth;
-    const heightByType = memoHeight * (editingMemo.memoType === 1 ? 0.5 : 1);
+    const isValid = validateMemoPosition(
+      editingMemo.memoType,
+      editingMemoPosX,
+      editingMemoPosY,
+      memoList
+    );
 
-    const editingMemoLeft = editingMemoPosX;
-    const editingMemoTop = editingMemoPosY;
-    const editingMemoRight = editingMemoPosX + widthByType;
-    const editingMemoBottom = editingMemoPosY + heightByType;
-
-    // 상하좌우 계산
-    let invalid =
-      editingMemoLeft < 0 ||
-      editingMemoTop < 0 ||
-      editingMemoRight > boardWidth ||
-      editingMemoBottom > boardHeight;
-
-    // TBD : 코드 성능 평가(...)
-    for (let idx = 0; idx < memoList.length; idx++) {
-      if (invalid) break;
-
-      const curMemo = memoList[idx];
-      const curMemoType = curMemo.memoType;
-      const left = curMemo.positionX || 0;
-      const top = curMemo.positionY || 0;
-      const right = left + memoWidth;
-      const bottom = top + memoHeight * (curMemoType === 1 ? 0.5 : 1);
-
-      invalid =
-        (((left <= editingMemoLeft && editingMemoLeft < right) ||
-          (left < editingMemoRight && editingMemoRight <= right)) &&
-          ((top <= editingMemoTop && editingMemoTop < bottom) ||
-            (top < editingMemoBottom && editingMemoBottom <= bottom))) ||
-        (((editingMemoLeft <= left && left < editingMemoRight) ||
-          (editingMemoLeft < right && right <= editingMemoRight)) &&
-          ((editingMemoTop <= top && top < editingMemoBottom) ||
-            (editingMemoTop < bottom && bottom <= editingMemoBottom)));
-    }
-
-    setIsPosInvalid(invalid);
+    setIsPosInvalid(!isValid);
   }, [editingMemoPosX, editingMemoPosY, editingMemo.memoType, memoList]);
 
   /** Posting mode에서 board에 점선 표시 */
   const BoardGrid = useMemo(() => {
     if (!isPostingMode) return;
-
-    router.refresh();
 
     return (
       <>
@@ -232,7 +205,7 @@ export const Board = function ({ memoList }: BoardProp) {
         </>
       </>
     );
-  }, [isPostingMode, router]);
+  }, [isPostingMode]);
 
   const handlePositionOnPostingMode = useCallback(
     (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
@@ -288,11 +261,17 @@ export const Board = function ({ memoList }: BoardProp) {
       // 메모 위치 고정까지 완료됨
       // 서버에 메모 저장 로직
       if (!confirm("제출하시겠습니까?")) return;
-      await postNewMemo();
-
-      if (error) {
-        alert("메모 생성 중 에러 발생");
-        console.error(error);
+      try {
+        await postNewMemo();
+      } catch (error) {
+        if (error instanceof GraphQLError) {
+          alert(`메모 생성 중 에러 발생 ${error.extensions.code}`);
+          console.error(error);
+        } else {
+          alert(`메모 생성 중 에러 발생 ${error}`);
+          console.error(error);
+        }
+        return;
       }
 
       alert(`posted!`);
@@ -306,7 +285,6 @@ export const Board = function ({ memoList }: BoardProp) {
       setIsBoardFixed(false);
     }
   }, [
-    error,
     isBoardFixed,
     isMemoPasted,
     loading,
