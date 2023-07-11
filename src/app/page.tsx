@@ -1,86 +1,40 @@
-"use client";
+import { LoginButton, LogoutButton } from "@/components/authButtons.component";
+import { authOptions } from "@/service/auth";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
 
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-import {
-  CredentialResponse,
-  GoogleLogin,
-  GoogleOAuthProvider,
-} from "@react-oauth/google";
-import styled from "styled-components";
-
-import { unselectable } from "@/style/properties";
-import { appear } from "@/style/animations";
-
-const clientId =
-  "706303852091-uqhi736g8tqcm4un3s2usu1qa0t0avdb.apps.googleusercontent.com";
-
-// #region styles
-
-const FrontPage = styled.div`
-  font-family: "Galmuri11";
-  text-align: center;
-  animation: ${appear} 2s;
-`;
-const Header = styled.header`
-  height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  margin-bottom: 1em;
-`;
-const Title = styled.div`
-  font-size: 4rem;
-  ${unselectable}
-`;
-const TitleThe = styled.label`
-  font-size: 0.75em;
-`;
-const TitleWhiteboard = styled.label`
-  font-size: 1.25em;
-  font-weight: bold;
-`;
-const Content = styled.div`
-  background-color: #fefeff;
-  min-height: 50vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-`;
-
-// #endregion
-
-export default function Home() {
-  const router = useRouter();
-
-  const handleOnLoginSuccess = useCallback(
-    (credential: CredentialResponse) => {
-      console.log(credential);
-      router.push("/board");
-    },
-    [router]
-  );
+export default async function Home() {
+  const session = await getServerSession(authOptions);
 
   return (
     <>
-      <GoogleOAuthProvider clientId={clientId}>
-        <FrontPage>
-          <Header>
-            <Title>
-              <TitleThe>{"The"}</TitleThe>
-              <TitleWhiteboard>{"Whiteboard"}</TitleWhiteboard>
-            </Title>
-          </Header>
-          <Content>
-            <GoogleLogin
-              onSuccess={handleOnLoginSuccess}
-              onError={() => {
-                console.log("Login Failed");
-              }}
-            />
-          </Content>
-        </FrontPage>
-      </GoogleOAuthProvider>
+      <div id="front-page" className="text-center font-galmuri">
+        <header className="mb-4 flex h-[50vh] items-end justify-center">
+          <div className="flex justify-center">
+            <span>
+              <h1 className="mx-auto my-0 animate-type select-none overflow-hidden whitespace-nowrap border-r-[1rem] border-black">
+                <span className="text-6xl tracking-wide">{"The"}</span>
+                <span className="text-9xl font-bold">{"Whiteboard"}</span>
+              </h1>
+            </span>
+          </div>
+        </header>
+        {!!session ? (
+          <div className="flex flex-col items-center justify-center">
+            <Link
+              className="mt-2 text-3xl font-bold hover:underline"
+              href="/board/world"
+            >
+              게시판으로
+            </Link>
+            <LogoutButton className="mt-4 text-2xl hover:underline" />
+          </div>
+        ) : (
+          <div>
+            <LoginButton className="mt-4 text-3xl font-bold hover:underline" />
+          </div>
+        )}
+      </div>
     </>
   );
 }

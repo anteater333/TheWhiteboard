@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 const User = gql`
   type User {
     id: ID!
-    ouathId: ID
+    oauthProvider: String
     nickname: String
     memos: [Memo]
     votes: [Vote]
