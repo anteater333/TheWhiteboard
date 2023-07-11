@@ -51,16 +51,17 @@ model Memo {
   referencedMemo    Memo[] @relation("MemoReference") // 나를 인용하는 메모
 
   memoType       Int
-  title          String
+  title          String?
   content        String
-  imageUrlFirst  String
-  imageUrlSecond String
-  isWriting      Boolean
+  imageUrlFirst  String?
+  imageUrlSecond String?
+  isWriting      Boolean?
   pageNum        Int
   positionX      Int
   positionY      Int
 
   votes Vote[]
+  point Int
 
   createdAt DateTime
   updatedAt DateTime

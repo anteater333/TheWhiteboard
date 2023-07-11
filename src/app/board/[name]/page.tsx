@@ -1,8 +1,41 @@
 import { LogoutButton } from "@/components/authButtons.component";
 import { Board } from "@/components/board.component";
-import { AddButton, OnGoingMemoButton } from "@/components/buttons.component";
 import { authOptions } from "@/service/auth";
+import database from "@/service/database";
 import { getServerSession } from "next-auth";
+
+const getMemos = async (boardName: string, pageNumber: number) => {
+  const memos = await database.memo.findMany({
+    where: {
+      pageNum: pageNumber,
+      board: {
+        name: boardName,
+      },
+    },
+    include: {
+      board: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          nickname: true,
+        },
+      },
+    },
+  });
+
+  return memos.map((memo) => {
+    return {
+      ...memo,
+      createdAt: memo.createdAt.toString(),
+      updatedAt: memo.updatedAt.toString(),
+    };
+  });
+};
 
 export default async function BoardPage({
   params,
@@ -14,6 +47,8 @@ export default async function BoardPage({
   const session = await getServerSession(authOptions);
 
   const pageNum = searchParams["page"] ?? 1;
+
+  const memos = await getMemos("world", 1);
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-x-hidden overflow-y-scroll scrollbar-hide">
@@ -30,7 +65,7 @@ export default async function BoardPage({
         className="relative h-[90vh] w-full overflow-hidden"
       >
         {/* The Whiteboard */}
-        <Board />
+        <Board memoList={memos} />
       </div>
       <div
         id="board-footer"

@@ -56,7 +56,7 @@ export const Memo = function ({
   return (
     <div
       id="memo-container"
-      className={`absolute flex select-none flex-col rounded-md border-gray-200 bg-slate-50 px-1 py-1 transition-opacity ${
+      className={`absolute flex cursor-default select-none flex-col rounded-md border-gray-200 bg-slate-50 px-1 py-1 transition-opacity ${
         isPostingMode && !isMemoPasted ? `shadow-2xl` : `shadow-md`
       }`}
       style={{
@@ -95,10 +95,10 @@ export const Memo = function ({
       ) : undefined}
       <div
         id="memo-header"
-        className="flex h-4 flex-row-reverse border-b-[1px] text-xs"
+        className="flex h-4 flex-row-reverse border-b-[1px] text-2xs"
       >
-        <div id="memo-owner" className="text-right">
-          <label className="font-galmuri text-3xs font-bold">from. </label>
+        <div id="memo-owner" className="text-right font-galmuri font-bold">
+          <label className="text-3xs">from. </label>
           {memo.user?.nickname}
         </div>
       </div>

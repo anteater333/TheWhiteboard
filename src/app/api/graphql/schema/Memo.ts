@@ -17,6 +17,7 @@ const Memo = gql`
     positionX: Int
     positionY: Int
     votes: [Vote]
+    point: Int
     createdAt: String
     updatedAt: String
   }
