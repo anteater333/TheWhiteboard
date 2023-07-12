@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:studio": "npx prisma studio",
-    "db:push": "npx prisma db push",
-    "db:studio": "npx prisma studio",
+    "db:push": "npx prisma db push"
   },
   "dependencies": {
     "@apollo/client": "^3.8.0-beta.7",
