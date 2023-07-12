@@ -109,7 +109,7 @@ export const Memo = function ({
         id="memo-footer"
         className="flex h-5 min-w-0 flex-col justify-end border-t-[1px] font-galmuri text-3xs font-bold"
       >
-        <div id="memo-footer-slot-1" className="">
+        <div id="memo-footer-slot-1">
           <div id="memo-date">
             {memo.createdAt ? formatDate(memo.createdAt) : undefined}
           </div>

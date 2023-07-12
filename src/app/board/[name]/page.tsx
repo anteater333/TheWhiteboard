@@ -62,7 +62,7 @@ export default async function BoardPage({
       </div>
       <div
         id="board-center"
-        className="relative h-[90vh] w-full overflow-hidden"
+        className="relative h-screen w-full overflow-hidden"
       >
         {/* The Whiteboard */}
         <Board memoList={memos} />

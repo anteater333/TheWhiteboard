@@ -47,7 +47,7 @@ type BoardProp = {
 
 const NEW_MEMO = gql`
   mutation NewMemo($input: MemoCreateInput) {
-    memoCreate (input: $input) {
+    memoCreate(input: $input) {
       memo {
         id
       }
@@ -481,7 +481,7 @@ export const Board = function ({ memoList }: BoardProp) {
 
       {/* 메모 추가 관련 버튼 */}
       <>
-        <div className="absolute bottom-6 right-4 z-40 flex w-fit flex-col items-end">
+        <div className="absolute bottom-20 right-4 z-40 flex w-fit flex-col items-end">
           {showAddList ? (
             <AddMemoList
               onSelected={(selected) => {
@@ -497,7 +497,7 @@ export const Board = function ({ memoList }: BoardProp) {
             onClick={handleOnAddButton}
           />
         </div>
-        <div className="absolute bottom-6 left-4 z-40 w-fit">
+        <div className="absolute bottom-20 left-4 z-40 w-fit">
           {editingMemo.content ? (
             <OnGoingMemoButton
               onClick={() => {
@@ -509,7 +509,7 @@ export const Board = function ({ memoList }: BoardProp) {
         </div>
 
         {isPostingMode ? (
-          <div className="absolute bottom-6 left-0 right-0 z-30 mx-auto w-44">
+          <div className="absolute bottom-20 left-0 right-0 z-30 mx-auto w-44">
             <PositionConfirmButton
               texts={{
                 keyText: loading ? "" : "space",
