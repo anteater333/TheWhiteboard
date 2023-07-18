@@ -41,3 +41,7 @@ next-env.d.ts
 
 .secret/
 .vscode/
+
+# postbuild의 결과물로 생성되는 sitemap.xml, robots.txt 제외
+public/robots.txt
+public/sitemap.xml
