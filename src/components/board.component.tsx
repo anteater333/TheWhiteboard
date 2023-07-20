@@ -34,6 +34,8 @@ import {
   memoWidth,
 } from "@/constants/size";
 import { GraphQLError } from "graphql";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const borderPadding = 32;
 
@@ -265,19 +267,26 @@ export const Board = function ({ memoList }: BoardProp) {
         await postNewMemo();
       } catch (error) {
         if (error instanceof GraphQLError) {
-          alert(`메모 생성 중 에러 발생 ${error.extensions.code}`);
+          toast(`메모 생성 중 에러 발생 ${error.extensions.code}`, {
+            type: "error",
+          });
           console.error(error);
         } else {
-          alert(`메모 생성 중 에러 발생 ${error}`);
+          toast(`메모 생성 중 에러 발생 ${error}`, {
+            type: "error",
+          });
+
           console.error(error);
         }
         return;
       }
 
-      alert(`posted!`);
-
       // 새로고침
       router.refresh();
+
+      toast(`Posted!`, {
+        type: "success",
+      });
 
       quitPostingMode();
     } else {
@@ -467,6 +476,12 @@ export const Board = function ({ memoList }: BoardProp) {
 
   return (
     <>
+      {/* Toastify */}
+      <ToastContainer
+        toastStyle={{ fontFamily: "galmuri11", fontWeight: "bold" }}
+        position="top-left"
+      />
+
       {/* <div id="debugger" className="fixed left-1/2 top-1/2 z-50 text-5xl">
         <div className="">{`${posX.toFixed(2)}, ${posY.toFixed(2)}`}</div>
         <div>{`${scale.toFixed(2)}`}</div>
