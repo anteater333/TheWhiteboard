@@ -1,7 +1,7 @@
 import { generateRandomNickname } from "@/utils/generator";
 import { Account, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import dbClient from "./database";
+import dbClient from "../database";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
             ...token, // Keep the previous token properties
             access_token: tokens.access_token,
             expires_at: Math.floor(
-              Date.now() / 1000 + (tokens.expires_in || 0),
+              Date.now() / 1000 + (tokens.expires_in || 0)
             ),
             // Fall back to old refresh token, but note that
             // many providers may only allow using a refresh token once.
