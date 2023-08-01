@@ -55,3 +55,10 @@ export function ApolloClientProvider({ children }: React.PropsWithChildren) {
   );
 }
 // #endregion
+
+// #region recoil
+import { RecoilRoot } from "recoil";
+export function RecoilProvider({ children }: React.PropsWithChildren) {
+  return <RecoilRoot>{children}</RecoilRoot>;
+}
+// #endregion

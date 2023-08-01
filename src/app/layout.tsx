@@ -2,7 +2,11 @@ import "./globals.css";
 
 import { Metadata } from "next";
 
-import { ApolloClientProvider, NextAuthProvider } from "./providers";
+import {
+  ApolloClientProvider,
+  NextAuthProvider,
+  RecoilProvider,
+} from "./providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ApolloClientProvider>
-          <NextAuthProvider>{children}</NextAuthProvider>
-        </ApolloClientProvider>
+        <RecoilProvider>
+          <ApolloClientProvider>
+            <NextAuthProvider>{children}</NextAuthProvider>
+          </ApolloClientProvider>
+        </RecoilProvider>
       </body>
     </html>
   );
