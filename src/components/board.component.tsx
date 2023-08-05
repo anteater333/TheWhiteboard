@@ -149,44 +149,42 @@ export const Board = function ({ memoList }: BoardProp) {
 
     return (
       <>
-        <>
-          {/* 세로줄 */}
-          {Array(10 * 4)
-            .fill(0)
-            .map((_, idx) => {
-              return (
-                <div
-                  key={`grid-vertical-${idx}`}
-                  className="absolute border-stone-300"
-                  style={{
-                    left: `${(memoWidth / 4) * idx}px`,
-                    width: `${memoWidth / 4}px`,
-                    height: `${boardHeight}px`,
-                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
-                    borderRightWidth: idx % 4 === 3 ? `2px` : `1px`,
-                  }}
-                />
-              );
-            })}
-          {/* 가로줄 */}
-          {Array(7.25 * 4)
-            .fill(0)
-            .map((_, idx) => {
-              return (
-                <div
-                  key={`grid-horizontal-${idx}`}
-                  className="absolute border-stone-300"
-                  style={{
-                    top: `${(memoHeight / 4) * idx}px`,
-                    width: `${boardWidth}px`,
-                    height: `${memoHeight / 4}px`,
-                    borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
-                    borderBottomWidth: idx % 4 === 3 ? `2px` : `1px`,
-                  }}
-                />
-              );
-            })}
-        </>
+        {/* 세로줄 */}
+        {Array(10 * 4)
+          .fill(0)
+          .map((_, idx) => {
+            return (
+              <div
+                key={`grid-vertical-${idx}`}
+                className="absolute border-stone-300"
+                style={{
+                  left: `${(memoWidth / 4) * idx}px`,
+                  width: `${memoWidth / 4}px`,
+                  height: `${boardHeight}px`,
+                  borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
+                  borderRightWidth: idx % 4 === 3 ? `2px` : `1px`,
+                }}
+              />
+            );
+          })}
+        {/* 가로줄 */}
+        {Array(7.25 * 4)
+          .fill(0)
+          .map((_, idx) => {
+            return (
+              <div
+                key={`grid-horizontal-${idx}`}
+                className="absolute border-stone-300"
+                style={{
+                  top: `${(memoHeight / 4) * idx}px`,
+                  width: `${boardWidth}px`,
+                  height: `${memoHeight / 4}px`,
+                  borderStyle: idx % 4 === 3 ? `solid` : `dashed`,
+                  borderBottomWidth: idx % 4 === 3 ? `2px` : `1px`,
+                }}
+              />
+            );
+          })}
       </>
     );
   }, [isPostingMode]);
