@@ -23,7 +23,6 @@ import { Memo } from "./memo.component";
 import { motion } from "framer-motion";
 import { MemoEditModal } from "./modal.component";
 import { MemoType } from "@/types/types";
-import { gql, useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { validateMemoPosition } from "@/utils/validator";
@@ -36,6 +35,7 @@ import {
 import { GraphQLError } from "graphql";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNewMemoMutation } from "@/libs/apollo/memoQueries";
 
 const borderPadding = 32;
 
@@ -46,16 +46,6 @@ const minScale = maxScale / numOfLevels;
 type BoardProp = {
   memoList: Partial<MemoType>[];
 };
-
-const NEW_MEMO = gql`
-  mutation NewMemo($input: MemoCreateInput) {
-    memoCreate(input: $input) {
-      memo {
-        id
-      }
-    }
-  }
-`;
 
 /**
  * The Whiteboard. Memo들의 집합.
@@ -92,18 +82,14 @@ export const Board = function ({ memoList }: BoardProp) {
   const [isPosInvalid, setIsPosInvalid] = useState(false);
 
   /** 새 메모 생성 API 호출 */
-  const [postNewMemo, { error, loading }] = useMutation(NEW_MEMO, {
-    variables: {
-      input: {
-        boardName: "world",
-        pageNum: 1,
-        content: editingMemo.content,
-        memoType: editingMemo.memoType,
-        positionX: editingMemoPosX,
-        positionY: editingMemoPosY,
-        userId: session.data?.user.id,
-      },
-    },
+  const [postNewMemo, { error, loading }] = useNewMemoMutation({
+    boardName: "world",
+    pageNum: 1,
+    content: editingMemo.content,
+    memoType: editingMemo.memoType,
+    positionX: editingMemoPosX,
+    positionY: editingMemoPosY,
+    userId: session.data?.user.id,
   });
 
   /** Posting mode에서 사용하는 자리잡기 용도 메모 컴포넌트 */
