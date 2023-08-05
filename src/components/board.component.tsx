@@ -125,11 +125,7 @@ export const Board = function ({ memoList }: BoardProp) {
         isMemoPasted={isMemoPasted}
         isDragging={isDragging}
         onPasted={() => {
-          if (isMemoPasted) {
-            setIsMemoPasted(false);
-            return;
-          }
-          setIsMemoPasted(true);
+          setIsMemoPasted(!isMemoPasted);
         }}
       />
     );
